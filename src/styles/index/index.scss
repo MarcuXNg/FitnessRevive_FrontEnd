@@ -1,0 +1,13 @@
+// Import Tailwind CSS
+
+@use 'tailwindcss/base';
+@use 'tailwindcss/components';
+@use 'tailwindcss/utilities';
+
+// Import custom SCSS files
+@use '../login/login.scss';
+@use '../navigation/Nav.scss';
+@use '../Error/Error.scss';
+
+// Fonts
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');

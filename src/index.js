@@ -1,15 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+// Bootstrap CSS
+// import "bootstrap/dist/css/bootstrap.min.css";
+// Bootstrap Bundle JS
+// import "bootstrap/dist/js/bootstrap.bundle.min";
+// In your React component file (e.g., App.jsx)
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+import App from './routes/App.jsx';
+import {AuthProvider} from './context/AuthProvider.jsx';
+import 'react-loader-spinner';
+import reportWebVitals from './reportWebVitals.js';
+import './styles/index/index.scss';
+
+const rootElement = document.getElementById('root');
+
+ReactDOM.createRoot(rootElement).render(
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>,
 );
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

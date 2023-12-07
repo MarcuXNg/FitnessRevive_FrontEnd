@@ -68,3 +68,21 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+### `npm install -g eslint` installed ESLint globally
+
+### `npm install eslint --save-dev` install ESLint locally (navigate to your project before install)
+
+### `npm install eslint-plugin-react --save-dev` install ESLint React plugin
+
+### `npx eslint --init` create an ESLint configuration file
+
+### `npm install -D tailwindcss` install tailwind
+
+### `npx tailwindcss init` init tailwind
+
+### config tailwind file in tailwindl.config.js
+
+You can find it here: [https://tailwindcss.com/docs/guides/create-react-app](Install Tailwind CSS with Create React App)
+
+### `npx kill-port 3000` to kill port
