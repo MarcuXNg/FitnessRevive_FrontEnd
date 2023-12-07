@@ -9,9 +9,14 @@ const ReportPopUp = ({isOpen, onClose}) => {
           <span className="close-btn" onClick={onClose}>
             &times;
           </span>
-          <h2>This is a Popup</h2>
-          <input type="email" />
-          <p>Popup content goes here.</p>
+          <div>
+            <h2>Report</h2>
+            <div className='columns-1'>
+              <input type="email" placeholder='your email' className='rounded-[10px] mb-2'/>
+              <input type='text'placeholder='Write your report here' className='rounded-[10px]'/>
+            </div>
+            <p>We are appreciated to here from you.</p>
+          </div>
         </div>
       </div>
     )
