@@ -10,12 +10,18 @@ const ReportPopUp = ({isOpen, onClose}) => {
             &times;
           </span>
           <div>
-            <h2>Report</h2>
-            <div className='columns-1'>
-              <input type="email" placeholder='your email' className='rounded-[10px] mb-2'/>
-              <input type='text'placeholder='Write your report here' className='rounded-[10px]'/>
+            <h2 className='text-[35px] font-poppins mt-3'>Report</h2>
+            <div className='relative w-[500px] mb-2 mt-4 items-center'>
+              <input type="email" placeholder='Your email' className='rounded-[10px] mb-2 font-poppins w-96'/>
+              <br/>
+              <textarea
+                placeholder='Write your report here'
+                className='rounded-[10px] font-poppins mb-8 w-96 h-52'
+              />
+              <br/>
+              <button className='bg-[#a1f65e] rounded-[10px] px-5 py-3 font-poppins font-medium hover:bg-[#85cf4c]'>Send</button>
             </div>
-            <p>We are appreciated to here from you.</p>
+            <p className='font-poppins mb-3'>We are appreciated to hear from you.</p>
           </div>
         </div>
       </div>

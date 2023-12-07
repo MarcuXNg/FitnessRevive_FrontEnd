@@ -46,12 +46,12 @@ const ErrorPage = () => {
               Sorry, an unexpected error has occurred. The page you are looking for doesn't exist. If you think something is broken, report the problem.
             </p>
             <div className="flex flex-row items-center gap-[21px] justify-center">
-              <a href='/' className="inline-flex items-center justify-center gap-[10px] py-[19px] px-[57px] relative flex-[0_0_auto] bg-[#a1f65e] all-[unset] box-border rounded-[15px]">
-                <div className="w-[150px] mt-[-1.00px] font-poppins font-semibold text-[#2e2e2e] text-[17px] text-center tracking-[0] leading-[normal">
+              <a href='/' className="inline-flex items-center justify-center gap-[10px] py-[19px] px-[57px] relative flex-[0_0_auto] bg-[#a1f65e] hover:bg-[#85cf4c] all-[unset] box-border rounded-[15px]">
+                <div className="w-[150px] mt-[-1.00px] font-poppins font-semibold text-[#2e2e2e] text-[17px] text-center tracking-[0] leading-[normal]">
                   Back to Home
                 </div>
               </a>
-              <button onClick={openReportPopup} className="inline-flex items-center justify-center gap-[10px] py-[19px] px-[57px] relative flex-[0_0_auto] bg-[#a1f65e] all-[unset] box-border rounded-[15px]">
+              <button onClick={openReportPopup} className="inline-flex items-center justify-center gap-[10px] py-[19px] px-[57px] relative flex-[0_0_auto] bg-[#a1f65e] hover:bg-[#85cf4c] all-[unset] box-border rounded-[15px]">
                 <div className="w-[150px] mt-[-1.00px] font-poppins font-semibold text-[#2e2e2e] text-[17px] text-center tracking-[0] leading-[normal]">
                   Report problem
                 </div>
