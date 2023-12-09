@@ -1,17 +1,33 @@
+/* eslint-disable prefer-const */
+// React
 import React, {useState} from 'react';
+// Scss
 import '../../styles/index/index.scss';
+// React router dom
 import {NavLink, useLocation, useNavigate} from 'react-router-dom';
+// Helmet
 import {HelmetProvider, Helmet} from 'react-helmet-async';
 
+// Authenticated
 import {useAuth} from '../../hooks/useAuth.jsx';
 
+// toast
+import {toast} from 'react-toastify';
+
+// logout service
+import {logoutUser} from '../../services/userService';
+
+// Mui material
 import {Stack, Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
+import Divider from '@mui/material/Divider';
 
 const NavHeader = (props) => {
-  const {auth} = useAuth();
+  // authencation
+  const {auth, logoutContext} = useAuth();
+  // get the location
   const location = useLocation();
 
   // navigation
@@ -22,13 +38,32 @@ const NavHeader = (props) => {
   const login = () => {
     navigate('/login');
   };
+  const users = () => {
+    navigate('/users');
+  };
 
+  // handle logout
+  const handleLogout = async () => {
+    let data = await logoutUser(); // clear cookies
+    localStorage.removeItem('jwt'); // clear localStorage
+    logoutContext(); // clear user in context
+
+    if (data && +data.EC === 0) {
+      toast.success('logout successfully');
+      navigate('/login');
+    } else {
+      toast.error(data.EM);
+    }
+  };
+
+  // darkmode lightmode
   const [activeIndex, setActiveIndex] = useState(0);
 
   const toggleActive = (index) => {
     setActiveIndex(index);
   };
 
+  // Features state
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -40,10 +75,24 @@ const NavHeader = (props) => {
     setAnchorEl(null);
   };
 
+  // User state
+  const [userProfileAnchorEl, setUserProfileAnchorEl] = useState(null);
+  const userProfileOpen = Boolean(userProfileAnchorEl);
+
+  const userProfileClick = (event) => {
+    setUserProfileAnchorEl(event.currentTarget);
+  };
+  const userProfileClose = () => {
+    setUserProfileAnchorEl(null);
+  };
+
   if (
     location.pathname === '/' ||
     location.pathname === '/about' ||
-    location.pathname === '/FAQ'
+    location.pathname === '/FAQ' ||
+    location.pathname === '/users' ||
+    location.pathname === '/users/edit' ||
+    location.pathname === '/admin/roles'
   ) {
     return (
       <>
@@ -68,7 +117,7 @@ const NavHeader = (props) => {
               href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
             />
           </Helmet>
-          <nav className="flex items-center shadow-lg shadow-[#512da8] fixed top-0 w-[1920px] bg-white dark:bg-slate-800">
+          <nav className="flex items-center shadow-sm shadow-[#0000005e] fixed top-0 w-[1920px] h-[80px] bg-[#F5F5F5] dark:bg-slate-800">
             <div className="nav-header w-[1774px] mx-auto justify-center">
               <Stack
                 direction="row"
@@ -102,27 +151,27 @@ const NavHeader = (props) => {
                     alignItems="center"
                   >
                     {/* Home */}
-                    <NavLink to="/" className="font-poppins hover:mb-[0.6rem]">
+                    <NavLink to="/" className="nav-a font-poppins hover:mb-[0.6rem]">
                       Home
                     </NavLink>
                     {/* About */}
                     <NavLink
                       to="/about"
-                      className="font-poppins hover:mb-[0.6rem]"
+                      className="nav-a font-poppins hover:mb-[0.6rem]"
                     >
                       About
                     </NavLink>
                     {/* FAQ */}
                     <NavLink
                       to="/FAQ"
-                      className="font-poppins hover:mb-[0.6rem]"
+                      className="nav-a font-poppins hover:mb-[0.6rem]"
                     >
                       FAQ
                     </NavLink>
                     {/* Features */}
                     <div>
                       <Typography
-                        className="hover:mb-[0.6rem]"
+                        className="nav-a hover:mb-[0.6rem]"
                         sx={{
                           color: 'black',
                           fontFamily: 'Poppins, sans-serif',
@@ -139,6 +188,9 @@ const NavHeader = (props) => {
                       </Typography>
                       <Menu
                         id="features-menu"
+                        sx={{
+                          top: '8px',
+                        }}
                         open={open}
                         onClose={handleClose}
                         anchorEl={anchorEl}
@@ -151,16 +203,36 @@ const NavHeader = (props) => {
                           horizontal: 'center',
                         }}
                       >
-                        <MenuItem onClick={bmi} className="font-poppins">
+                        <MenuItem
+                          onClick={bmi}
+                          style={{
+                            // Use inline styles
+                            fontFamily: 'Poppins, sans-serif',
+                          }}
+                        >
                           BMI / BMR
                         </MenuItem>
-                        <MenuItem className="font-poppins">Calories</MenuItem>
-                        <MenuItem className="font-poppins">Exercises</MenuItem>
+                        <MenuItem
+                          style={{
+                            // Use inline styles
+                            fontFamily: 'Poppins, sans-serif',
+                          }}
+                        >
+                          Calories
+                        </MenuItem>
+                        <MenuItem
+                          style={{
+                            // Use inline styles
+                            fontFamily: 'Poppins, sans-serif',
+                          }}
+                        >
+                          Exercises
+                        </MenuItem>
                       </Menu>
                     </div>
                     <NavLink
                       to="/dashboard"
-                      className="font-poppins hover:mb-[0.6rem]"
+                      className="nav-a font-poppins hover:mb-[0.6rem]"
                     >
                       Dashboard
                     </NavLink>
@@ -170,7 +242,7 @@ const NavHeader = (props) => {
                   direction="row"
                   justifyContent="flex-end"
                   className="items-center justify-center"
-                  spacing={2}
+                  spacing={3}
                 >
                   <div
                     id="dark-mode"
@@ -196,38 +268,85 @@ const NavHeader = (props) => {
                   <div>
                     {auth && auth.isAuthenticated ? (
                       // If user is authenticated, render Logout button
-                      <Button
-                        sx={{
-                          color: 'white',
-                          fontFamily: 'Poppins, sans-serif',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          borderRadius: '8px',
-                          paddingLeft: '30px',
-                          paddingRight: '30px',
-                          paddingTop: '10px',
-                          paddingBottom: '10px',
-                          bgcolor: '#512da8',
-                        }}
-                        variant="contained"
-                        // onClick={logout} // Assuming you have a logout function in your useAuth hook
-                      >
-                        Logout
-                      </Button>
+                      <div>
+                        <div className="group flex items-center">
+                          <div className="mr-3">
+                            <p className="text-sm font-medium text-black cursor-default whitespace-nowrap">
+                              Welcome, Kien
+                            </p>
+                          </div>
+                          <img
+                            src={process.env.PUBLIC_URL + '/test/test.jpg'}
+                            className="shrink-0 h-11 w-11 rounded-full cursor-pointer"
+                            onClick={userProfileClick}
+                            aria-controls={open ? 'user-menu' : undefined}
+                          />
+                        </div>
+                        <Menu
+                          id="user-menu"
+                          sx={{
+                            top: '8px',
+                          }}
+                          open={userProfileOpen}
+                          onClose={userProfileClose}
+                          anchorEl={userProfileAnchorEl}
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                          }}
+                        >
+                          <MenuItem
+                            onClick={users}
+                            style={{
+                              // Use inline styles
+                              // fontWeight: 400,
+                              fontFamily: 'Poppins, sans-serif',
+                            }}
+                          >
+                            Profile
+                          </MenuItem>
+                          <MenuItem
+                            style={{
+                              // Use inline styles
+                              // fontWeight: 400,
+                              fontFamily: 'Poppins, sans-serif',
+                            }}
+                          >
+                            Change Password
+                          </MenuItem>
+                          <Divider dark />
+                          <MenuItem
+                            style={{
+                              // Use inline styles
+                              // fontWeight: 400,
+                              fontFamily: 'Poppins, sans-serif',
+                            }}
+                          >
+                            <span onClick={handleLogout}>Log out</span>
+                          </MenuItem>
+                        </Menu>
+                      </div>
                     ) : (
                       // If user is not authenticated, render Login button
                       <Button
                         sx={{
-                          color: 'white',
-                          fontFamily: 'Poppins, sans-serif',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          borderRadius: '8px',
-                          paddingLeft: '30px',
-                          paddingRight: '30px',
-                          paddingTop: '10px',
-                          paddingBottom: '10px',
-                          bgcolor: '#512da8',
+                          'color': '#2F2F2F',
+                          'fontFamily': 'Poppins, sans-serif',
+                          'fontSize': '13px',
+                          'fontWeight': '500',
+                          'borderRadius': '8px',
+                          'paddingLeft': '30px',
+                          'paddingRight': '30px',
+                          'paddingTop': '10px',
+                          'paddingBottom': '10px',
+                          'bgcolor': '#DCDCDC',
+                          '&:hover': {
+                            bgcolor: '#A1F65E', // Change this to the desired hover background color
+                          },
                         }}
                         variant="contained"
                         onClick={login}

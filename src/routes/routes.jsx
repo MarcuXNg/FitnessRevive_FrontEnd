@@ -11,6 +11,9 @@ import Users from '../app/User/Users.jsx';
 import Layout from '../components/Layout/Layout.jsx';
 import RequireAuth from '../components/RequireAuth/RequireAuth.jsx';
 import UsersEdit from '../app/User/UsersEdit.jsx';
+import RolesManage from '../app/Roles/RolesManage.jsx';
+import Admin from '../app/Admin/Admin.jsx';
+import AdminLayout from '../components/Layout/AdminLayout.jsx';
 
 const AppRoutes = (props) => {
   /**
@@ -32,7 +35,10 @@ const AppRoutes = (props) => {
           {/* authenticated routes */}
           <Route element={<RequireAuth />}>
             <Route path="users" element={<Users />} />
-            <Route path="admin" element={<Users />} />
+            <Route path="admin" element={<AdminLayout />}>
+              <Route path="home" element={<Admin />} />
+              <Route path='roles' element={<RolesManage />}/>
+            </Route>
             <Route path='users/edit' element={<UsersEdit/>}/>
           </Route>
 

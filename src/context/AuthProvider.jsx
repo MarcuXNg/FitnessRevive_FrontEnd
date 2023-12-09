@@ -19,12 +19,8 @@ const AuthProvider = ({children}) => {
     setAuth({...userData, isLoading: false});
   };
 
-  const logout = () => {
-    setAuth((user) => ({
-      isAuthenticated: false,
-      token: '',
-      account: {},
-    }));
+  const logoutContext = () => {
+    setAuth({...userDefault, isLoading: false});
   };
 
   const fetchUser = async () => {
@@ -50,10 +46,18 @@ const AuthProvider = ({children}) => {
   };
 
   // define những router đã defined
-  const validRoutes = ['/', '/about', '/FAQ', '/users', '/admin', '/users/edit'];
+  const validRoutes = [
+    '/',
+    '/about',
+    '/FAQ',
+    '/users',
+    '/admin',
+    '/users/edit',
+    '/admin/roles',
+  ];
 
   useEffect(() => {
-    console.log(location.pathname);
+    // console.log(location.pathname);
     const isPathValid = validRoutes.includes(location.pathname);
     if (location && location.pathname !== '/login' && isPathValid) {
       fetchUser();
@@ -63,13 +67,10 @@ const AuthProvider = ({children}) => {
   }, [location]);
 
   return (
-    <AuthContext.Provider value={{auth, loginContext, logout}}>
+    <AuthContext.Provider value={{auth, loginContext, logoutContext}}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export {
-  AuthContext,
-  AuthProvider,
-};
+export {AuthContext, AuthProvider};

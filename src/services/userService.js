@@ -15,6 +15,11 @@ const loginUser = async (ValueLogin, PasswordLogin) => {
   });
 };
 
+// Logout
+const logoutUser = async () => {
+  return await axios.post('/api/v1/logout');
+};
+
 // fetch authenticated
 const getUserAccount = async () => {
   return await axios.get(`/api/v1/account`);
@@ -24,4 +29,5 @@ export {
   registerNewUSer,
   loginUser,
   getUserAccount,
+  logoutUser,
 };
