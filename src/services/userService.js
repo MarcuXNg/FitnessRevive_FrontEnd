@@ -25,9 +25,23 @@ const getUserAccount = async () => {
   return await axios.get(`/api/v1/account`);
 };
 
+// GET ALL USERS
+const fetchAllUser = async (page, limit) => {
+  return await axios.get(`/api/v1/users/read?page=${page}&limit=${limit}`);
+};
+
+const deleteUser = async (user) => {
+  const userId = user.User.id;
+  // console.log(userId);
+  return await axios.delete(`/api/v1/users/delete`, {data: {id: userId}});
+};
+
+
 export {
   registerNewUSer,
   loginUser,
   getUserAccount,
   logoutUser,
+  fetchAllUser,
+  deleteUser,
 };

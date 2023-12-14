@@ -1,11 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-// Bootstrap CSS
-// import "bootstrap/dist/css/bootstrap.min.css";
-// Bootstrap Bundle JS
-// import "bootstrap/dist/js/bootstrap.bundle.min";
-// In your React component file (e.g., App.jsx)
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import App from './routes/App.jsx';

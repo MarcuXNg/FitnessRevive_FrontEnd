@@ -1,7 +1,14 @@
 import React from 'react';
 import {HelmetProvider, Helmet} from 'react-helmet-async';
+import {useLocation, Link} from 'react-router-dom';
+import '../../styles/index/index.scss';
 
 const Sidebar = () => {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
   return (
     <HelmetProvider>
       <div>
@@ -13,57 +20,63 @@ const Sidebar = () => {
             rel="stylesheet" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
         </Helmet>
-        <aside>
-          <div className="font-poppins sidebar flex flex-col relative">
-            <a className="flex items-center relative no-underline" href="#">
+        <aside className='h-[100vh]'>
+          <div className="font-poppins sidebar flex flex-col relative bg-[#fff] rounded-[15px] h-[88vh] t-[1.5rem]">
+            <Link className={`flex items-center relative no-underline ${isActive('/admin') ? 'active' : ''}`} to="/admin">
               <span className="material-symbols-outlined">
                     dashboard
               </span>
-              <h3>Dashboard</h3>
-            </a>
-            <a className="flex items-center relative no-underline" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Dashboard</h3>
+            </Link>
+            <Link className={`flex items-center relative no-underline ${isActive('/admin/users') ? 'active' : ''}`} to="/admin/users">
               <span className="material-symbols-outlined">
                     person_outline
               </span>
-              <h3>User</h3>
-            </a>
-            <a className="flex items-center relative no-underline active" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>User</h3>
+            </Link>
+            <Link className={`flex items-center relative no-underline ${isActive('/admin/roles') ? 'active' : ''}`} to="/admin/roles">
+              <span className="material-symbols-outlined">
+                settings_accessibility
+              </span>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Roles</h3>
+            </Link>
+            <Link className="flex items-center relative no-underline" to="#">
               <span className="material-icons-sharp">
                     insights
               </span>
-              <h3>Analytics</h3>
-            </a>
-            <a className="flex items-center relative no-underline" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Analytics</h3>
+            </Link>
+            <Link className="flex items-center relative no-underline" to="#">
               <span className="material-icons-sharp">
                     mail_outline
               </span>
-              <h3>Tickets</h3>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Tickets</h3>
               <span className="message-count">27</span>
-            </a>
-            <a className="flex items-center relative no-underline" href="#">
+            </Link>
+            <Link className="flex items-center relative no-underline" to="#">
               <span className="material-icons-sharp">
                     report_gmailerrorred
               </span>
-              <h3>Reports</h3>
-            </a>
-            <a className="flex items-center relative no-underline" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Reports</h3>
+            </Link>
+            <Link className="flex items-center relative no-underline" to="#">
               <span className="material-symbols-outlined">
                     person_outline
               </span>
-              <h3>Settings</h3>
-            </a>
-            <a className="flex items-center relative no-underline" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Settings</h3>
+            </Link>
+            <Link className="flex items-center relative no-underline" to="#">
               <span className="material-icons-sharp">
                     add
               </span>
-              <h3>New Login</h3>
-            </a>
-            <a className="flex items-center no-underline" href="#">
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>New Login</h3>
+            </Link>
+            <Link className="flex items-center no-underline" to="#">
               <span className="material-icons-sharp">
                     logout
               </span>
-              <h3>Logout</h3>
-            </a>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Logout</h3>
+            </Link>
           </div>
         </aside>
       </div>

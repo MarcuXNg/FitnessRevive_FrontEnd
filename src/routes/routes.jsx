@@ -1,5 +1,8 @@
-import {Routes, Route} from 'react-router-dom';
-import React from 'react';
+import {Routes, Route} from 'react-router-dom'; // react-router-dom
+import React from 'react'; // react
+
+// Authenticated
+// import {useAuth} from '../hooks/useAuth.jsx';
 
 // Router
 import Home from '../app/Home/Home.jsx';
@@ -14,6 +17,7 @@ import UsersEdit from '../app/User/UsersEdit.jsx';
 import RolesManage from '../app/Roles/RolesManage.jsx';
 import Admin from '../app/Admin/Admin.jsx';
 import AdminLayout from '../components/Layout/AdminLayout.jsx';
+import UsersManage from '../app/Admin/UsersManage.jsx';
 
 const AppRoutes = (props) => {
   /**
@@ -21,6 +25,9 @@ const AppRoutes = (props) => {
    *
    *
    */
+
+  // authencation
+  // const {auth} = useAuth();
 
   return (
     <>
@@ -32,12 +39,16 @@ const AppRoutes = (props) => {
           <Route path="about" element={<About />} />
           <Route path="FAQ" element={<FAQ />} />
 
+          {/* {auth && auth.account.groupWithRoles.id === '1' || auth && auth.account.groupWithRoles.id === '3'} */}
           {/* authenticated routes */}
           <Route element={<RequireAuth />}>
             <Route path="users" element={<Users />} />
             <Route path="admin" element={<AdminLayout />}>
-              <Route path="home" element={<Admin />} />
+              <Route path="admin" element={<Admin />} />
+              <Route path="users" element={<UsersManage />} />
               <Route path='roles' element={<RolesManage />}/>
+              <Route path="analytics" element={<Admin />} />
+              <Route path="ticket" element={<Admin />} />
             </Route>
             <Route path='users/edit' element={<UsersEdit/>}/>
           </Route>

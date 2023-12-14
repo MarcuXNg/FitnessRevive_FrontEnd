@@ -80,7 +80,6 @@ const LoginForm = () => {
         toast.success(response.EM);
         // navigate
         return navigate('/users');
-        // handleCreateNewAccount();
       }
       if (response && +response.EC !== 0) {
         // error

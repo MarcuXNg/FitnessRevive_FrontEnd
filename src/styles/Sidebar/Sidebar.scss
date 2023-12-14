@@ -1,0 +1,76 @@
+// config var
+$color-light: rgba(132, 139, 200, 0.18);
+$box-shadow: 0 2rem 3rem var(--color-light);
+$color-info-dark: #7d8da1;
+$color-primary: #6C9BCF;
+$color-background: #f6f6f9;
+$color-danger: #FF0060;
+$color-white: #fff;
+$border-radius-1: 0.4rem;
+
+// sidebar
+.sidebar {
+    box-shadow: $box-shadow; // box shadow
+    transition: all 0.3s ease;
+    &:hover {
+        box-shadow: none;
+    }
+    a {
+        color: $color-info-dark;
+        height: 3.7rem;
+        gap: 1rem;
+        margin-left: 2rem;
+        transition: all 0.3s ease;
+        &.active {
+            width: 100%;
+            color: $color-primary;
+            background-color: $color-light;
+            margin-left: 0;
+            &::before {
+                content: '';
+                width: 6px;
+                height: 18px;
+                background-color: $color-primary;
+            }
+            span {
+                color: $color-primary;
+                margin-left: calc(1rem - 3px);
+            }
+        }
+        // icon
+        span { 
+            font-size: 1.6rem;
+            transition: all 0.3s ease;
+        }
+        // dashboard
+        &:first-child {
+            &.active {
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            }
+        }
+        &:last-child {
+            position: absolute;
+            bottom: 2rem;
+            width: 100%;
+        }
+        &:hover {
+            color: $color-primary;
+            span {
+                margin-left: 0.6rem;
+            }
+        }
+    }
+    .message-count {
+        background-color: $color-danger;
+        padding: 2px 6px;
+        color: $color-white;
+        font-size: 11px;
+        border-radius: $border-radius-1;
+    }
+}
+
+// body
+body {
+    background-color: $color-background; // background color of the whole web
+}

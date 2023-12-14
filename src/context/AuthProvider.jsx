@@ -40,6 +40,8 @@ const AuthProvider = ({children}) => {
       };
 
       setAuth(data);
+      // // Log the data
+      // console.log('Fetch User Data:', data);
     } else {
       setAuth({...userDefault, isLoading: false});
     }
@@ -52,8 +54,11 @@ const AuthProvider = ({children}) => {
     '/FAQ',
     '/users',
     '/admin',
-    '/users/edit',
+    '/admin/users',
     '/admin/roles',
+    '/admin/analytics',
+    '/admin/tickets',
+    '/users/edit',
   ];
 
   useEffect(() => {

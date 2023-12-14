@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 // React
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 // Scss
 import '../../styles/index/index.scss';
 // React router dom
@@ -65,7 +65,6 @@ const NavHeader = (props) => {
 
   // Features state
   const [anchorEl, setAnchorEl] = useState(null);
-
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -86,14 +85,25 @@ const NavHeader = (props) => {
     setUserProfileAnchorEl(null);
   };
 
-  if (
-    location.pathname === '/' ||
-    location.pathname === '/about' ||
-    location.pathname === '/FAQ' ||
-    location.pathname === '/users' ||
-    location.pathname === '/users/edit' ||
-    location.pathname === '/admin/roles'
-  ) {
+  // render the state of the popover dropdown every time reload the page and set it to null
+  useEffect(() => {
+    setAnchorEl(null); // features dropdwon
+    setUserProfileAnchorEl(null); // profile dropdown
+  }, [location.pathname]);
+
+  // path that show navigation headers
+  const validPaths = [
+    '/',
+    '/about',
+    '/FAQ',
+    '/users',
+    '/users/edit',
+    '/admin',
+    '/admin/roles',
+    '/admin/users',
+  ];
+
+  if (validPaths.includes(location.pathname)) {
     return (
       <>
         <HelmetProvider>
@@ -117,7 +127,7 @@ const NavHeader = (props) => {
               href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
             />
           </Helmet>
-          <nav className="flex items-center shadow-sm shadow-[#0000005e] fixed top-0 w-[1920px] h-[80px] bg-[#F5F5F5] dark:bg-slate-800">
+          <nav className="flex items-center shadow-sm shadow-[#0000005e] fixed top-0 w-[1920px] h-[80px] bg-[#F5F5F5] dark:bg-slate-800 z-[9999]">
             <div className="nav-header w-[1774px] mx-auto justify-center">
               <Stack
                 direction="row"
@@ -151,7 +161,10 @@ const NavHeader = (props) => {
                     alignItems="center"
                   >
                     {/* Home */}
-                    <NavLink to="/" className="nav-a font-poppins hover:mb-[0.6rem]">
+                    <NavLink
+                      to="/"
+                      className="nav-a font-poppins hover:mb-[0.6rem]"
+                    >
                       Home
                     </NavLink>
                     {/* About */}
@@ -190,6 +203,7 @@ const NavHeader = (props) => {
                         id="features-menu"
                         sx={{
                           top: '8px',
+                          zIndex: '9999',
                         }}
                         open={open}
                         onClose={handleClose}
@@ -286,6 +300,7 @@ const NavHeader = (props) => {
                           id="user-menu"
                           sx={{
                             top: '8px',
+                            zIndex: '9999',
                           }}
                           open={userProfileOpen}
                           onClose={userProfileClose}
