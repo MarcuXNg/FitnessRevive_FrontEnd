@@ -17,7 +17,7 @@ const UsersManage = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentLimit, setCurrentLimit] = useState(3); // limit how many appear on one page
+  const [currentLimit, setCurrentLimit] = useState(10); // limit how many appear on one page
   const [totalPages, setTotalPages] = useState(0);
 
   // listUsers state
@@ -61,7 +61,7 @@ const UsersManage = () => {
     if (response && response.EC === 0) {
       toast.success(response.EM);
       await fetchUsers();
-      // setUSerDeleteShow(false);
+      setUSerDeleteShow(false);
     } else {
       toast.error(response.EM);
     };
@@ -81,10 +81,6 @@ const UsersManage = () => {
     setShowUserCreate(true);
   };
 
-  const handleCreateUser = () => {
-
-  };
-
   // handleUserCreateClose Func
   const handleUserCreateClose = () => {
     setShowUserCreate(false);
@@ -100,8 +96,8 @@ const UsersManage = () => {
         <div className="userManage-header">
           <div><h3 className='text-[3rem]'>Users</h3></div>
           <div className='userManage-actions mb-4'>
-            <button className='bg-green-400 text-white px-4 py-2 rounded-[8px] mr-2'>Refresh</button>
-            <button className='bg-blue-500 text-white px-4 py-2 rounded-[8px]' onClick={handleCreateUserOpen}>Add new User</button>
+            <button className='bg-green-400 text-white px-4 py-2 rounded-[8px] mr-2 hover:bg-green-500'>Refresh</button>
+            <button className='bg-blue-500 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600' onClick={handleCreateUserOpen}>Add new User</button>
           </div>
           <div className="userMange-body">
             <table className="min-w-full table-auto divide-y divide-gray-500 border border-gray-300">
@@ -190,7 +186,6 @@ const UsersManage = () => {
         dataModel={dataModel}/>
       <ModalUser
         showUserCreate={showUserCreate}
-        handleCreateUser={handleCreateUser}
         handleUserCreateClose={handleUserCreateClose}/>
     </>
   );

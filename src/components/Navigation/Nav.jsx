@@ -290,7 +290,7 @@ const NavHeader = (props) => {
                             </p>
                           </div>
                           <img
-                            src={process.env.PUBLIC_URL + '/test/test.jpg'}
+                            src={process.env.PUBLIC_URL + '/admin/admin.png'}
                             className="shrink-0 h-11 w-11 rounded-full cursor-pointer"
                             onClick={userProfileClick}
                             aria-controls={open ? 'user-menu' : undefined}

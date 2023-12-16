@@ -19,7 +19,7 @@ import Admin from '../app/Admin/Admin.jsx';
 import AdminLayout from '../components/Layout/AdminLayout.jsx';
 import UsersManage from '../app/Admin/UsersManage.jsx';
 
-const AppRoutes = (props) => {
+const AppRoutes = () => {
   /**
    * ['/users/show'. /users/update]
    *

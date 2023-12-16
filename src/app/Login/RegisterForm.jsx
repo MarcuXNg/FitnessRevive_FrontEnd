@@ -1,6 +1,6 @@
 // import
 import React, {useState} from 'react'; // react
-import {registerNewUSer} from '../../services/userService'; // register service
+import {registerNewUser} from '../../services/userService'; // register service
 import {useNavigate} from 'react-router-dom'; // react-router-dom
 
 // toast notify
@@ -188,7 +188,7 @@ const RegisterForm = () => {
     const check = isValidInputs();
     // validation success
     if (check === true) {
-      const response = await registerNewUSer(
+      const response = await registerNewUser(
           email,
           password,
           firstname,

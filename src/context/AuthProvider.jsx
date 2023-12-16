@@ -66,6 +66,7 @@ const AuthProvider = ({children}) => {
     const isPathValid = validRoutes.includes(location.pathname);
     if (location && location.pathname !== '/login' && isPathValid) {
       fetchUser();
+      // console.log('fetch');
     } else {
       setAuth((prevAuth) => ({...prevAuth, isLoading: false}));
     }
