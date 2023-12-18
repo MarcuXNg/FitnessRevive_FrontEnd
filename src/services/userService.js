@@ -53,7 +53,7 @@ const fetchAllUser = async (page, limit) => {
 // delete User
 const deleteUser = async (user) => {
   try {
-    const userId = user.User.id;
+    const userId = user.id;
     // console.log(userId);
     return await axios.delete(`/api/v1/users/delete`, {data: {id: userId}});
   } catch (error) {

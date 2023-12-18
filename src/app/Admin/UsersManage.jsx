@@ -9,8 +9,10 @@ import ModalDelete from './ModalDelete';
 import ModalUser from './ModalUser';
 
 const UsersManage = () => {
+  const [actionModalUser, setActionModalUser] = useState('UPDATE');
   // Data Modal
-  const [dataModel, setDataModel] = useState({});
+  const [dataModel, setDataModel] = useState({}); // modal delete
+  const [dataModalUser, setDataModelUser] = useState({}); // modal update/create users
 
   // Modal Delete popup state
   const [userDeleteShow, setUSerDeleteShow] = useState(false);
@@ -29,7 +31,7 @@ const UsersManage = () => {
       let response = await fetchAllUser(currentPage, currentLimit);
       // console.log(response);
       if (response && response.EC === 0) {
-        // console.log(response.DT);
+        console.log(response.DT);
         setTotalPages(response.DT.totalPages);
         setListUsers(response.DT.users);
       }
@@ -57,7 +59,7 @@ const UsersManage = () => {
   // user delete function
   const handleDelete = async () => {
     let response = await deleteUser(dataModel);
-    // console.log(response);
+    console.log(response);
     if (response && response.EC === 0) {
       toast.success(response.EM);
       await fetchUsers();
@@ -84,6 +86,11 @@ const UsersManage = () => {
   // handleUserCreateClose Func
   const handleUserCreateClose = () => {
     setShowUserCreate(false);
+  };
+
+  const handleEditUser = (user) => {
+    setDataModelUser(user);
+    setShowUserCreate(true);
   };
 
   useEffect(() => {
@@ -118,13 +125,13 @@ const UsersManage = () => {
                       // console.log(item);
                       return (
                         <tr key={`row-${index}`} className="hover:bg-gray-200">
-                          <td className="py-2 px-[2px] border-b border-r text-center">{index + 1}</td>
-                          <td className="py-2 px-[2px] border-b border-r text-center">{item.User.id}</td>
-                          <td className="py-2 px-4 border-b border-r">{item.User.email}</td>
+                          <td className="py-2 px-[2px] border-b border-r text-center">{(currentPage - 1) * currentLimit + index + 1}</td>
+                          <td className="py-2 px-[2px] border-b border-r text-center">{item.id}</td>
+                          <td className="py-2 px-4 border-b border-r">{item.email}</td>
                           <td className="py-2 px-[10px] border-b border-r">{item.first_name + ' ' + item.last_name }</td>
-                          <td className="py-2 px-[2px] border-b border-r text-center">{item.Group.id}</td>
-                          <td className="py-2 px-[2px] border-b text-center">
-                            <button className='bg-yellow-400 text-white px-4 py-2 rounded-[8px] mr-2'>Edit</button>
+                          <td className="py-2 px-[2px] border-b border-r text-center w-[100px]">{item.groupId}</td>
+                          <td className="py-2 px-[2px] border-b text-center w-[200px]">
+                            <button className='bg-yellow-400 text-white px-4 py-2 rounded-[8px] mr-2' onClick={() => handleEditUser(item)}>Edit</button>
                             <button className='bg-red-500 text-white px-4 py-2 rounded-[8px]'onClick={() => handleDeleteUser(item)}>Delete</button>
                           </td>
                         </tr>
@@ -186,7 +193,9 @@ const UsersManage = () => {
         dataModel={dataModel}/>
       <ModalUser
         showUserCreate={showUserCreate}
-        handleUserCreateClose={handleUserCreateClose}/>
+        handleUserCreateClose={handleUserCreateClose}
+        action={actionModalUser}
+        dataModalUser={dataModalUser}/>
     </>
   );
 };

@@ -27,6 +27,7 @@ import Divider from '@mui/material/Divider';
 const NavHeader = (props) => {
   // authencation
   const {auth, logoutContext} = useAuth();
+  // console.log(auth);
   // get the location
   const location = useLocation();
 
@@ -286,7 +287,7 @@ const NavHeader = (props) => {
                         <div className="group flex items-center">
                           <div className="mr-3">
                             <p className="text-sm font-medium text-black cursor-default whitespace-nowrap">
-                              Welcome, Kien
+                              Welcome, {auth.account.username}
                             </p>
                           </div>
                           <img

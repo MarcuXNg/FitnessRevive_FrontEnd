@@ -214,6 +214,8 @@ const countries = [
 const ModalUser = ({
   showUserCreate,
   handleUserCreateClose,
+  action,
+  dataModalUser,
 }) => {
   const defaultUserData = {
     email: '',
@@ -343,6 +345,14 @@ const ModalUser = ({
     getGroups();
   }, []);
 
+  useEffect(() => {
+    console.log(dataModalUser);
+    if (action === 'UPDATE') {
+      setUserData(dataModalUser);
+      console.log(userData);
+    }
+  }, [dataModalUser]); // mỗi lần thay đổi giá trị này sẽ chạy vào hàm setUserData
+
   return (
     <HelmetProvider>
       <div>
@@ -402,7 +412,7 @@ const ModalUser = ({
                             as="h3"
                             className="text-base font-semibold leading-6 text-gray-900 font-poppins"
                           >
-                          Create a new User
+                            {action === 'CREATE' ? 'Create a new User' : 'Edit a user'}
                           </Dialog.Title>
                           <div className="mt-2">
                             <p className="text-sm text-gray-500 font-poppins">
@@ -736,6 +746,8 @@ const ModalUser = ({
 ModalUser.propTypes = {
   showUserCreate: PropTypes.bool.isRequired,
   handleUserCreateClose: PropTypes.func.isRequired,
+  action: PropTypes.string.isRequired,
+  dataModalUser: PropTypes.object.isRequired,
 };
 
 export default ModalUser;
