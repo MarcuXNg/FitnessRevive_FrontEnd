@@ -40,6 +40,12 @@ const Sidebar = () => {
               </span>
               <h3 className='font-[500] text-[0.87rem] font-poppins'>Roles</h3>
             </Link>
+            <Link className={`flex items-center relative no-underline ${isActive('/admin/group-role') ? 'active' : ''}`} to="/admin/group-role">
+              <span className="material-symbols-outlined">
+                groups
+              </span>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Group Roles</h3>
+            </Link>
             <Link className="flex items-center relative no-underline" to="#">
               <span className="material-icons-sharp">
                     insights
@@ -64,12 +70,6 @@ const Sidebar = () => {
                     person_outline
               </span>
               <h3 className='font-[500] text-[0.87rem] font-poppins'>Settings</h3>
-            </Link>
-            <Link className="flex items-center relative no-underline" to="#">
-              <span className="material-icons-sharp">
-                    add
-              </span>
-              <h3 className='font-[500] text-[0.87rem] font-poppins'>New Login</h3>
             </Link>
             <Link className="flex items-center no-underline" to="#">
               <span className="material-icons-sharp">

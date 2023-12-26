@@ -102,6 +102,7 @@ const NavHeader = (props) => {
     '/admin',
     '/admin/roles',
     '/admin/users',
+    '/admin/group-role',
   ];
 
   if (validPaths.includes(location.pathname)) {
@@ -246,7 +247,15 @@ const NavHeader = (props) => {
                       </Menu>
                     </div>
                     <NavLink
-                      to="/dashboard"
+                      to={
+                        auth && auth.account && auth.account.groupWithRoles ?
+                          auth.account.groupWithRoles.id === 1 || auth.account.groupWithRoles.id === 3 ?
+                            '/admin' :
+                            auth.account.groupWithRoles.id === 4 ?
+                            '/users' :
+                            '/login' : // Set a default route if needed
+                          '/login' // Set a default route if auth or account or groupWithRoles is not available
+                      }
                       className="nav-a font-poppins hover:mb-[0.6rem]"
                     >
                       Dashboard

@@ -7,9 +7,8 @@ import {UserPlusIcon} from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
 import {toast} from 'react-toastify';
 import _ from 'lodash';
-import {createNewUser} from '../../services/userService';
+import {createNewUser, fetchGroup, updateCurrentUser} from '../../services/userService';
 
-import {fetchGroup} from '../../services/userService';
 import {Helmet, HelmetProvider} from 'react-helmet-async';
 
 const countries = [
@@ -219,9 +218,9 @@ const ModalUser = ({
 }) => {
   const defaultUserData = {
     email: '',
-    phone: '',
-    firstname: '',
-    lastname: '',
+    contact_number: '',
+    first_name: '',
+    last_name: '',
     password: '',
     state: '',
     city: '',
@@ -230,22 +229,24 @@ const ModalUser = ({
     day: '',
     month: '',
     year: '',
+    country: '',
+    date_of_birth: '',
   };
 
 
   const validInputsDefault = {
     email: true,
-    phone: true,
-    firstname: true,
-    lastname: true,
+    contact_number: true,
+    first_name: true,
+    last_name: true,
     password: true,
-    state: true,
-    city: true,
-    gender: true,
+    // state: true,
+    // city: true,
+    // gender: true,
     group: true,
-    day: true,
-    month: true,
-    year: true,
+    // day: true,
+    // month: true,
+    // year: true,
   };
 
   const [userData, setUserData] = useState(defaultUserData);
@@ -276,18 +277,37 @@ const ModalUser = ({
     }
   };
 
+  const calculateDateOfBirth = () => {
+    const selectedDay = userData.day || 1; // Default to 1 if day is not selected
+    const selectedMonth = (userData.month || 1) - 1; // Default to 1 if month is not selected
+    const selectedYear = userData.year || new Date().getFullYear(); // Default to the current year if year is not selected
+
+    // Create a new Date object with the time set to 00:00:00 (midnight) for the selected day, month, and year
+    const dateOfBirth = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay, 0, 0, 0));
+
+    // Format the date to a string in the "YYYY-MM-DD" format
+    const formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0];
+    // console.log(formattedDateOfBirth);
+    // Update the userData state with the calculated date_of_birth
+    setUserData((userData) => ({
+      ...userData,
+      date_of_birth: formattedDateOfBirth,
+    }));
+    // console.log('test', userData);
+  };
+
   const handleOnChangeInput = (value, name) => {
     let _userData = _.cloneDeep(userData);
     _userData[name] = value;
     setUserData(_userData);
-    // console.log(userData);
   };
   const checkValidateInputs = () => {
+    if (action === 'UPDATE') return true;
     // create user
     setValidInputs(validInputsDefault);
 
     // Define an array of field names to check for validation
-    let arr = ['email', 'password', 'firstname', 'lastname', 'group'];
+    let arr = ['email', 'password', 'first_name', 'last_name', 'group'];
 
     // Initialize the check variable to true
     let check = true;
@@ -322,11 +342,12 @@ const ModalUser = ({
 
     // If inputs are valid, proceed with further logic
     if (check === true) {
+      // console.log(userData);
       // Add your logic here for creating the user or any other action
-      let res = await createNewUser({...userData, groupId: userData['group']});
+      let res = action === 'CREATE' ? await createNewUser({...userData, groupId: userData['group']}) : await updateCurrentUser({...userData, groupId: userData['group']});
       if (res && res.EC === 0) {
         handleUserCreateClose();
-        setUserData({...defaultUserData, group: userGroups[0].id});
+        setUserData({...defaultUserData, group: userGroups && userGroups.length > 0 ? userGroups[0].id : ''});
       }
       if (res && res.EC !== 0) {
         toast.error(res.EM);
@@ -336,22 +357,45 @@ const ModalUser = ({
       }
     }
   };
-  const handleCanceUserCreate = async () => {
-    setUserData({...defaultUserData, group: userGroups[0].id});
+  const handleCancelUserCreate = async () => {
+    setUserData((defaultUserData) => ({...defaultUserData, group: userGroups[0].id}));
+    // setUserData({...defaultUserData, group: userGroups[0].id});
     handleUserCreateClose();
   };
+
+  const handleCloseModalUser = async () => {
+    handleCancelUserCreate();
+    setUserData(defaultUserData);
+    setValidInputs(validInputsDefault);
+  };
+
+  useEffect(() => {
+    calculateDateOfBirth();
+  }, [userData.day, userData.month, userData.year]);
 
   useEffect(() => {
     getGroups();
   }, []);
 
   useEffect(() => {
-    console.log(dataModalUser);
+    // console.log(dataModalUser);
     if (action === 'UPDATE') {
-      setUserData(dataModalUser);
-      console.log(userData);
+      const dob = new Date(dataModalUser.date_of_birth);
+      let dobDay = dob.getDate().toString();
+      let dobMonth = (dob.getMonth() + 1).toString(); // Months are zero-indexed
+      let dobYear = dob.getFullYear().toString();
+      setUserData({...dataModalUser, group: dataModalUser ? dataModalUser.groupId : '', day: dataModalUser ? dobDay : '', month: dataModalUser ? dobMonth : '', year: dataModalUser ? dobYear : ''});
+      // console.log(userData);
     }
-  }, [dataModalUser]); // mỗi lần thay đổi giá trị này sẽ chạy vào hàm setUserData
+  }, [dataModalUser, action]); // mỗi lần thay đổi giá trị này sẽ chạy vào hàm setUserData
+
+  useEffect(() => {
+    if (action === 'CREATE') {
+      if (userGroups && userGroups.length > 0) {
+        setUserData({...userData, group: userGroups[0].id, gender: 'Male', country: 'Afghanistan'});
+      }
+    }
+  }, [action]);
 
   return (
     <HelmetProvider>
@@ -373,7 +417,7 @@ const ModalUser = ({
           <Dialog
             as="div"
             className="relative z-10"
-            onClose={handleUserCreateClose}
+            onClose={handleCloseModalUser}
           >
             <Transition.Child
               as={Fragment}
@@ -416,7 +460,7 @@ const ModalUser = ({
                           </Dialog.Title>
                           <div className="mt-2">
                             <p className="text-sm text-gray-500 font-poppins">
-                            You are creating users as an admin.
+                            You are {action === 'CREATE' ? 'creating': 'editting'} users as an admin.
                             </p>
                           </div>
                         </div>
@@ -441,9 +485,10 @@ const ModalUser = ({
                                     validInputs.email ?
                                       'focus:border-blue-300' :
                                       'focus:border-red-500 bg-red-50 border-red-500'
-                                  }`}
+                                  } ${action === 'CREATE' ? '': 'bg-slate-200'}`}
                                   value={userData.email}
                                   onChange={(event) => handleOnChangeInput(event.target.value, 'email')}
+                                  disabled={action === 'CREATE' ? false : true}
                                 />
                                 {validInputs.email ? null : (
                                   <span className="material-symbols-outlined absolute inset-y-0 right-0 pr-2 pt-2 flex items-center pointer-events-none text-red-600">
@@ -454,35 +499,36 @@ const ModalUser = ({
                             </div>
                             {/* Password */}
                             <div>
-                              <label
-                                htmlFor={validInputs.password ? `passwordCreateUser` : `invalidPasswordCreateUser`}
-                                className="text-sm font-medium text-gray-600 block font-poppins"
-                              >
-                              Password (<span className="text-red-500">*</span>
-                              ):
-                              </label>
-                              <input
-                                type="password"
-                                id={validInputs.password ? `passwordCreateUser` : `invalidPasswordCreateUser`}
-                                placeholder="Password"
-                                className={`rounded-[10px] w-full font-poppins border focus:outline-none focus:ring-2 ${
-                                  validInputs.password ?
-                                    'focus:border-blue-300' :
-                                    'focus:border-red-500 bg-red-50 border-red-500'
-                                }`}
-                                value={userData.password}
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'password')}
-                              />
-                              {validInputs.password ? null : (
-                                  <span className="material-symbols-outlined absolute top-[112px] right-0 pr-[2rem] flex items-center pointer-events-none text-red-600">
-                                    error
-                                  </span>
-                                )}
+                              {action === 'CREATE' &&
+                              <>
+                                <label
+                                  htmlFor={validInputs.password ? `passwordCreateUser` : `invalidPasswordCreateUser`}
+                                  className="text-sm font-medium text-gray-600 block font-poppins"
+                                >Password (<span className="text-red-500">*</span>):
+                                </label>
+                                <input
+                                  type="password"
+                                  id={validInputs.password ? `passwordCreateUser` : `invalidPasswordCreateUser`}
+                                  placeholder="Password"
+                                  className={`rounded-[10px] w-full font-poppins border focus:outline-none focus:ring-2 ${
+                                validInputs.password ?
+                                  'focus:border-blue-300' :
+                                  'focus:border-red-500 bg-red-50 border-red-500'
+                                  }`}
+                                  value={userData.password}
+                                  onChange={(event) => handleOnChangeInput(event.target.value, 'password')}
+                                />
+                                {validInputs.password ? null : (
+                                <span className="material-symbols-outlined absolute top-[112px] right-0 pr-[2rem] flex items-center pointer-events-none text-red-600">
+                                  error
+                                </span>
+                              )}
+                              </>}
                             </div>
                             {/* FirstName */}
                             <div>
                               <label
-                                htmlFor={validInputs.firstname ? `firstNameCreateUser` : `invalidFirstNameCreateUser`}
+                                htmlFor={validInputs.first_name ? `firstNameCreateUser` : `invalidFirstNameCreateUser`}
                                 className="text-sm font-medium text-gray-600 block font-poppins"
                               >
                               First Name (
@@ -490,17 +536,17 @@ const ModalUser = ({
                               </label>
                               <input
                                 type="text"
-                                id={validInputs.firstname ? `firstNameCreateUser` : `invalidFirstNameCreateUser`}
+                                id={validInputs.first_name ? `firstNameCreateUser` : `invalidFirstNameCreateUser`}
                                 placeholder="First Name"
                                 className={`rounded-[10px] w-full font-poppins border focus:outline-none focus:ring-2 ${
-                                  validInputs.firstname ?
+                                  validInputs.first_name ?
                                     'focus:border-blue-300' :
                                     'focus:border-red-500 bg-red-50 border-red-500'
                                 }`}
-                                value={userData.firstname}
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'firstname')}
+                                value={userData.first_name}
+                                onChange={(event) => handleOnChangeInput(event.target.value, 'first_name')}
                               />
-                              {validInputs.firstname ? null : (
+                              {validInputs.first_name ? null : (
                                   <span className="material-symbols-outlined absolute top-[191px] right-[395px] pr-2 pt-2 flex items-center pointer-events-none text-red-600">
                                     error
                                   </span>
@@ -509,31 +555,31 @@ const ModalUser = ({
                             {/* Last Name */}
                             <div>
                               <label
-                                htmlFor={validInputs.lastname ? `lastNameCreateUser` : `invalidLastNameCreateUser`}
+                                htmlFor={validInputs.last_name ? `lastNameCreateUser` : `invalidLastNameCreateUser`}
                                 className="text-sm font-medium text-gray-600 block font-poppins"
                               >
-                              Last-Name (<span className="text-red-500">*</span>
+                              Last Name (<span className="text-red-500">*</span>
                               ):
                               </label>
                               <input
                                 type="text"
-                                id={validInputs.lastname ? `lastNameCreateUser` : `invalidLastNameCreateUser`}
+                                id={validInputs.last_name ? `lastNameCreateUser` : `invalidLastNameCreateUser`}
                                 placeholder="Last Name"
                                 className={`rounded-[10px] w-full font-poppins border focus:outline-none focus:ring-2 ${
-                                  validInputs.lastname ?
+                                  validInputs.last_name ?
                                     'focus:border-blue-300' :
                                     'focus:border-red-500 bg-red-50 border-red-500'
                                 }`}
-                                value={userData.lastname}
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'lastname')}
+                                value={userData.last_name}
+                                onChange={(event) => handleOnChangeInput(event.target.value, 'last_name')}
                               />
-                              {validInputs.lastname ? null : (
+                              {validInputs.last_name ? null : (
                                   <span className="material-symbols-outlined absolute top-[199px] right-0 pr-[2rem] flex items-center pointer-events-none text-red-600">
                                     error
                                   </span>
                                 )}
                             </div>
-                            {/* Phone */}
+                            {/* contact_number */}
                             <div>
                               <label
                                 htmlFor="contactNumberCreateUser"
@@ -546,8 +592,8 @@ const ModalUser = ({
                                 id="contactNumberCreateUser"
                                 placeholder="Contact Number"
                                 className="rounded-[10px] w-full font-poppins"
-                                value={userData.phone}
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'phone')}
+                                value={userData.contact_number}
+                                onChange={(event) => handleOnChangeInput(event.target.value, 'contact_number')}
                               />
                             </div>
                             {/* State */}
@@ -597,6 +643,7 @@ const ModalUser = ({
                                 name="gender"
                                 className="p-[10px] px-[50px] rounded-[10px] focus:outline-none focus:ring-2 focus:border-blue-300 block sm:text-sm font-poppins"
                                 onChange={(event) => handleOnChangeInput(event.target.value, 'gender')}
+                                value={userData.gender}
                               >
                                 <option defaultValue="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -616,6 +663,7 @@ const ModalUser = ({
                                 name="country"
                                 className="p-[10px] rounded-[10px] focus:outline-none focus:ring-2 focus:border-blue-300 block w-full sm:text-sm font-poppins"
                                 onChange={(event) => handleOnChangeInput(event.target.value, 'country')}
+                                value={userData.country}
                               >
                                 {countries.map((country) => (
                                   <option key={country} value={country}>
@@ -637,6 +685,7 @@ const ModalUser = ({
                                 name="group"
                                 className="p-[10px] px-[50px] rounded-[10px] focus:outline-none focus:ring-2 focus:border-blue-300 block sm:text-sm font-poppins"
                                 onChange={(event) => handleOnChangeInput(event.target.value, 'group')}
+                                value={userData.group}
                               >
                                 {userGroups.length > 0 &&
                                 userGroups.map((item, index) => {
@@ -671,6 +720,7 @@ const ModalUser = ({
                                   name="day"
                                   className="p-2 pr-[30px] rounded-[10px] font-poppins"
                                   onChange={(event) => handleOnChangeInput(event.target.value, 'day')}
+                                  value={userData.day}
                                 >
                                   <option value="">Day</option>
                                   {days.map((day) => (
@@ -686,6 +736,7 @@ const ModalUser = ({
                                   name="month"
                                   className="p-2 pr-[30px] rounded-[10px] font-poppins"
                                   onChange={(event) => handleOnChangeInput(event.target.value, 'month')}
+                                  value={userData.month}
                                 >
                                   <option value="">Month</option>
                                   {months.map((month) => (
@@ -701,6 +752,7 @@ const ModalUser = ({
                                   name="year"
                                   className="p-2 pr-[30px] rounded-[10px] font-poppins"
                                   onChange={(event) => handleOnChangeInput(event.target.value, 'year')}
+                                  value={userData.year}
                                 >
                                   <option value="">Year</option>
                                   {years.map((year) => (
@@ -722,12 +774,12 @@ const ModalUser = ({
                         className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto font-poppins"
                         onClick={() => handleConfirmUser()}
                       >
-                      Create
+                        {action === 'CREATE' ? 'Create' : 'Save'}
                       </button>
                       <button
                         type="button"
                         className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto font-poppins"
-                        onClick={handleCanceUserCreate}
+                        onClick={handleCloseModalUser}
                       >
                       Cancel
                       </button>

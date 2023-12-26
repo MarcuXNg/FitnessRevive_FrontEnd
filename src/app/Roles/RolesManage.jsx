@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import _ from 'lodash';
 import {v4 as uuidv4} from 'uuid';
 import {toast} from 'react-toastify';
@@ -7,6 +7,8 @@ import {createRoles} from '../../services/rolesService';
 import TableRoles from './TableRoles';
 
 const RolesManage = (props) => {
+  const childRef = useRef();
+
   const dataChildDefault = {
     url: '',
     description: '',
@@ -69,6 +71,7 @@ const RolesManage = (props) => {
       let res = await createRoles(data);
       if (res && res.EC === 0) {
         toast.success(res.EM);
+        childRef.current.fetchListRolesAgain();
       }
     } else {
       // error
@@ -157,7 +160,7 @@ const RolesManage = (props) => {
           <hr className='mt-3'/>
           <div className="mt-3">
             <h4 className='font-semibold'>List Current Roles: </h4>
-            <TableRoles />
+            <TableRoles ref={childRef}/>
           </div>
         </div>
       </div>

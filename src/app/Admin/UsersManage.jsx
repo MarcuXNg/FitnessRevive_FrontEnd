@@ -9,7 +9,8 @@ import ModalDelete from './ModalDelete';
 import ModalUser from './ModalUser';
 
 const UsersManage = () => {
-  const [actionModalUser, setActionModalUser] = useState('UPDATE');
+  // action Modal
+  const [actionModalUser, setActionModalUser] = useState('');
   // Data Modal
   const [dataModel, setDataModel] = useState({}); // modal delete
   const [dataModalUser, setDataModelUser] = useState({}); // modal update/create users
@@ -31,7 +32,7 @@ const UsersManage = () => {
       let response = await fetchAllUser(currentPage, currentLimit);
       // console.log(response);
       if (response && response.EC === 0) {
-        console.log(response.DT);
+        // console.log(response.DT);
         setTotalPages(response.DT.totalPages);
         setListUsers(response.DT.users);
       }
@@ -43,9 +44,9 @@ const UsersManage = () => {
   // PageClick func
   // Invoke when user click to request another page.
   const handlePageClick = async (event) => {
-    setCurrentPage(+event.selected + 1); // set CurrentPage value state
-    // await fetchUsers(+event.selected + 1);
-    // alert(event.selected);
+    const selectedPage = +event.selected + 1;
+    setCurrentPage(selectedPage); // set CurrentPage value state
+    await fetchUsers(selectedPage);
   };
 
   // show confirm pop up Func
@@ -80,22 +81,30 @@ const UsersManage = () => {
 
   // CreateUser Func
   const handleCreateUserOpen = () => {
+    setActionModalUser('CREATE');
     setShowUserCreate(true);
   };
 
   // handleUserCreateClose Func
-  const handleUserCreateClose = () => {
+  const handleUserCreateClose = async () => {
     setShowUserCreate(false);
+    setDataModelUser({});
+    await fetchUsers();
   };
 
   const handleEditUser = (user) => {
+    setActionModalUser('UPDATE');
     setDataModelUser(user);
     setShowUserCreate(true);
   };
 
+  const handleRefresh = async () => {
+    await fetchUsers();
+  };
+
   useEffect(() => {
     fetchUsers(); // fetch user on every render
-  }, [currentPage]);
+  }, [currentPage, currentLimit]);
 
   return (
     <>
@@ -103,8 +112,8 @@ const UsersManage = () => {
         <div className="userManage-header">
           <div><h3 className='text-[3rem]'>Users</h3></div>
           <div className='userManage-actions mb-4'>
-            <button className='bg-green-400 text-white px-4 py-2 rounded-[8px] mr-2 hover:bg-green-500'>Refresh</button>
-            <button className='bg-blue-500 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600' onClick={handleCreateUserOpen}>Add new User</button>
+            <button className='bg-green-400 text-white px-4 py-2 rounded-[8px] mr-2 hover:bg-green-500' onClick={handleRefresh}><i className="fa-solid fa-arrows-rotate mr-2"></i>Refresh</button>
+            <button className='bg-blue-500 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600' onClick={handleCreateUserOpen}><i className="fa-solid fa-plus mr-2"/>Add new User</button>
           </div>
           <div className="userMange-body">
             <table className="min-w-full table-auto divide-y divide-gray-500 border border-gray-300">
@@ -129,10 +138,10 @@ const UsersManage = () => {
                           <td className="py-2 px-[2px] border-b border-r text-center">{item.id}</td>
                           <td className="py-2 px-4 border-b border-r">{item.email}</td>
                           <td className="py-2 px-[10px] border-b border-r">{item.first_name + ' ' + item.last_name }</td>
-                          <td className="py-2 px-[2px] border-b border-r text-center w-[100px]">{item.groupId}</td>
-                          <td className="py-2 px-[2px] border-b text-center w-[200px]">
-                            <button className='bg-yellow-400 text-white px-4 py-2 rounded-[8px] mr-2' onClick={() => handleEditUser(item)}>Edit</button>
-                            <button className='bg-red-500 text-white px-4 py-2 rounded-[8px]'onClick={() => handleDeleteUser(item)}>Delete</button>
+                          <td className="py-2 px-[2px] border-b border-r text-center w-[100px]">{item ? item.groupName : ''}</td>
+                          <td className="py-2 px-[2px] border-b text-center w-[250px]">
+                            <button className='bg-yellow-400 text-white px-4 py-2 rounded-[8px] mr-2' onClick={() => handleEditUser(item)}><i className="fa-solid fa-pen-to-square mr-2"/>Edit</button>
+                            <button className='bg-red-500 text-white px-4 py-2 rounded-[8px]'onClick={() => handleDeleteUser(item)}><i className="fa-solid fa-delete-left mr-2"/>Delete</button>
                           </td>
                         </tr>
                       );

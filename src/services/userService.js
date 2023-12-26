@@ -4,7 +4,7 @@ import axios from '../setup/axios.js';
 // Register
 const registerNewUser = async (email, password, firstname, lastname) => {
   try {
-    return await axios.post('/api/v1/register', {
+    return await axios.post('/register', {
       email, password, firstname, lastname,
     });
   } catch (error) {
@@ -15,7 +15,7 @@ const registerNewUser = async (email, password, firstname, lastname) => {
 // Login
 const loginUser = async (ValueLogin, PasswordLogin) => {
   try {
-    return await axios.post('/api/v1/login', {
+    return await axios.post('/login', {
       ValueLogin, PasswordLogin,
     });
   } catch (error) {
@@ -26,7 +26,7 @@ const loginUser = async (ValueLogin, PasswordLogin) => {
 // Logout
 const logoutUser = async () => {
   try {
-    return await axios.post('/api/v1/logout');
+    return await axios.post('/logout');
   } catch (error) {
     console.log(error);
   }
@@ -35,7 +35,7 @@ const logoutUser = async () => {
 // fetch authenticated
 const getUserAccount = async () => {
   try {
-    return await axios.get(`/api/v1/account`);
+    return await axios.get(`/account`);
   } catch (error) {
     console.log(error);
   }
@@ -44,7 +44,7 @@ const getUserAccount = async () => {
 // GET ALL USERS
 const fetchAllUser = async (page, limit) => {
   try {
-    return await axios.get(`/api/v1/users/read?page=${page}&limit=${limit}`);
+    return await axios.get(`/users/read?page=${page}&limit=${limit}`);
   } catch (error) {
     console.log(error);
   }
@@ -55,7 +55,7 @@ const deleteUser = async (user) => {
   try {
     const userId = user.id;
     // console.log(userId);
-    return await axios.delete(`/api/v1/users/delete`, {data: {id: userId}});
+    return await axios.delete(`/users/delete`, {data: {id: userId}});
   } catch (error) {
     console.log(error);
   }
@@ -64,7 +64,7 @@ const deleteUser = async (user) => {
 // Group fetch
 const fetchGroup = async () => {
   try {
-    return await axios.get(`/api/v1/group/read`);
+    return await axios.get(`/group/read`);
   } catch (error) {
     console.log(error);
   }
@@ -73,7 +73,18 @@ const fetchGroup = async () => {
 // userCreate
 const createNewUser = async (userData) => {
   try {
-    return await axios.post(`/api/v1/users/create`, {...userData});
+    // console.log(userData);
+    return await axios.post(`/users/create`, {...userData});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// update user
+const updateCurrentUser = async (userData) => {
+  try {
+    // console.log('check push data:', userData);
+    return await axios.put(`/users/update`, {...userData});
   } catch (error) {
     console.log(error);
   }
@@ -87,5 +98,6 @@ export {
   fetchAllUser,
   deleteUser,
   fetchGroup,
+  updateCurrentUser,
   createNewUser,
 };

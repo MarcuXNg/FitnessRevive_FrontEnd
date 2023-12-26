@@ -57,6 +57,7 @@ const AuthProvider = ({children}) => {
     '/admin/users',
     '/admin/roles',
     '/admin/analytics',
+    '/admin/group-role',
     '/admin/tickets',
     '/users/edit',
   ];

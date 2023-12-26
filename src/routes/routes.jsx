@@ -1,23 +1,26 @@
+/* eslint-disable no-unused-vars */
 import {Routes, Route} from 'react-router-dom'; // react-router-dom
 import React from 'react'; // react
 
 // Authenticated
-// import {useAuth} from '../hooks/useAuth.jsx';
+import {useAuth} from '../hooks/useAuth.jsx';
 
 // Router
-import Home from '../app/Home/Home.jsx';
-import About from '../app/About/About.jsx';
-import FAQ from '../app/FAQ/FAQ.jsx';
-import Login from '../app/Login/Login.jsx';
-import ErrorPage from '../app/404/404.jsx';
-import Users from '../app/User/Users.jsx';
-import Layout from '../components/Layout/Layout.jsx';
-import RequireAuth from '../components/RequireAuth/RequireAuth.jsx';
-import UsersEdit from '../app/User/UsersEdit.jsx';
-import RolesManage from '../app/Roles/RolesManage.jsx';
-import Admin from '../app/Admin/Admin.jsx';
-import AdminLayout from '../components/Layout/AdminLayout.jsx';
-import UsersManage from '../app/Admin/UsersManage.jsx';
+import Home from '../app/Home/Home.jsx'; // Homepage
+import About from '../app/About/About.jsx'; // About
+import FAQ from '../app/FAQ/FAQ.jsx'; // FAQ
+import Login from '../app/Login/Login.jsx'; // Login
+import ErrorPage from '../app/404/404.jsx'; // Error
+import Users from '../app/User/Users.jsx'; // User Dashboard
+import Layout from '../components/Layout/Layout.jsx'; // Parent Fragment
+import RequireAuth from '../components/RequireAuth/RequireAuth.jsx'; // Parent Fragment with auth
+import UsersEdit from '../app/User/UsersEdit.jsx'; // User edit
+import RolesManage from '../app/Roles/RolesManage.jsx'; // RolesManage
+import Admin from '../app/Admin/Admin.jsx'; // Admin
+import AdminLayout from '../components/Layout/AdminLayout.jsx'; // Admin Layout with sidebar
+import UsersManage from '../app/Admin/UsersManage.jsx'; // UserManage
+import SearchExercises from '../app/Exercise/SearchExercises.jsx';
+import GroupRole from '../app/GroupRole/GroupRole.jsx';
 
 const AppRoutes = () => {
   /**
@@ -27,7 +30,8 @@ const AppRoutes = () => {
    */
 
   // authencation
-  // const {auth} = useAuth();
+  const {auth} = useAuth();
+  // console.log(auth);
 
   return (
     <>
@@ -37,21 +41,29 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="about" element={<About />} />
-          <Route path="FAQ" element={<FAQ />} />
+          <Route path="faq" element={<FAQ />} />
+          <Route path="exercises" element={<SearchExercises />} />
 
-          {/* {auth && auth.account.groupWithRoles.id === '1' || auth && auth.account.groupWithRoles.id === '3'} */}
           {/* authenticated routes */}
-          <Route element={<RequireAuth />}>
-            <Route path="users" element={<Users />} />
-            <Route path="admin" element={<AdminLayout />}>
-              <Route path="admin" element={<Admin />} />
-              <Route path="users" element={<UsersManage />} />
-              <Route path='roles' element={<RolesManage />}/>
-              <Route path="analytics" element={<Admin />} />
-              <Route path="ticket" element={<Admin />} />
+          {auth && auth.account && auth.account.groupWithRoles && (
+            <Route element={<RequireAuth />}>
+              {(auth.account.groupWithRoles.id === 1 || auth.account.groupWithRoles.id === 3) && (
+                <Route path="admin" element={<AdminLayout />}>
+                  <Route path="admin" element={<Admin />} />
+                  <Route path="users" element={<UsersManage />} />
+                  <Route path="roles" element={<RolesManage />} />
+                  <Route path="group-role" element={<GroupRole />} />
+                  <Route path="analytics" element={<Admin />} />
+                  <Route path="ticket" element={<Admin />} />
+                </Route>
+              )}
+              {auth.account.groupWithRoles.id === 4 && (
+                <Route path="users" element={<Users />}>
+                  <Route path="users/edit" element={<UsersEdit />} />
+                </Route>
+              )}
             </Route>
-            <Route path='users/edit' element={<UsersEdit/>}/>
-          </Route>
+          )}
 
           {/* catch all */}
           <Route path="*" element={<ErrorPage />} />
