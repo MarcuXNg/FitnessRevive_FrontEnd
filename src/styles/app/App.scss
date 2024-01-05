@@ -1,7 +1,17 @@
+$color-background: #f6f6f9;
+
 .loading-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+}
+
+// body
+body {
+    background-color: $color-background; // background color of the whole web
+    // width: 100vh;
+    // height: 100vh;
+    overflow-x: hidden;
 }

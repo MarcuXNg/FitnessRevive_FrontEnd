@@ -103,6 +103,7 @@ const NavHeader = (props) => {
     '/admin/roles',
     '/admin/users',
     '/admin/group-role',
+    '/admin/analytics',
   ];
 
   if (validPaths.includes(location.pathname)) {

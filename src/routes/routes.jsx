@@ -21,6 +21,7 @@ import AdminLayout from '../components/Layout/AdminLayout.jsx'; // Admin Layout 
 import UsersManage from '../app/Admin/UsersManage.jsx'; // UserManage
 import SearchExercises from '../app/Exercise/SearchExercises.jsx';
 import GroupRole from '../app/GroupRole/GroupRole.jsx';
+import AdminAnalytics from '../app/Analytics/AdminAnalytics.jsx';
 
 const AppRoutes = () => {
   /**
@@ -49,11 +50,11 @@ const AppRoutes = () => {
             <Route element={<RequireAuth />}>
               {(auth.account.groupWithRoles.id === 1 || auth.account.groupWithRoles.id === 3) && (
                 <Route path="admin" element={<AdminLayout />}>
-                  <Route path="admin" element={<Admin />} />
+                  <Route path="" element={<Admin />} />
                   <Route path="users" element={<UsersManage />} />
                   <Route path="roles" element={<RolesManage />} />
                   <Route path="group-role" element={<GroupRole />} />
-                  <Route path="analytics" element={<Admin />} />
+                  <Route path="analytics" element={<AdminAnalytics />} />
                   <Route path="ticket" element={<Admin />} />
                 </Route>
               )}

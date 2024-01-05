@@ -103,6 +103,8 @@ const UsersManage = () => {
   };
 
   useEffect(() => {
+    document.title = 'Users';
+
     fetchUsers(); // fetch user on every render
   }, [currentPage, currentLimit]);
 

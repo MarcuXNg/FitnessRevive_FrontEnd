@@ -90,6 +90,22 @@ const updateCurrentUser = async (userData) => {
   }
 };
 
+const countAllUser = async () => {
+  try {
+    return await axios.get(`/users/count`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const countAllUserPerWeek = async () => {
+  try {
+    return await axios.get(`/users/count-per-week`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   registerNewUser,
   loginUser,
@@ -100,4 +116,6 @@ export {
   fetchGroup,
   updateCurrentUser,
   createNewUser,
+  countAllUser,
+  countAllUserPerWeek,
 };

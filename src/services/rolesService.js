@@ -30,8 +30,26 @@ const deleteRoles = async (role) => {
   }
 };
 
+const fetchRolesByGroup = async (groupId) => {
+  try {
+    return axios.get(`/admin/roles/by-group/${groupId}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const assignRolesToGroup = async (data) => {
+  try {
+    return await axios.post(`/admin/roles/assign-to-group`, {data});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   createRoles,
   fetchAllRoles,
   deleteRoles,
+  fetchRolesByGroup,
+  assignRolesToGroup,
 };

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import _ from 'lodash';
 import {v4 as uuidv4} from 'uuid';
 import {toast} from 'react-toastify';
@@ -83,6 +83,10 @@ const RolesManage = (props) => {
       setListChilds(_listChilds);
     }
   };
+
+  useEffect(() => {
+    document.title = 'Roles';
+  }, []);
 
   return (
     <div>

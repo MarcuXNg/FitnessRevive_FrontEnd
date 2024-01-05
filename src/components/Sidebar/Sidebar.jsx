@@ -1,7 +1,6 @@
 import React from 'react';
 import {HelmetProvider, Helmet} from 'react-helmet-async';
 import {useLocation, Link} from 'react-router-dom';
-import '../../styles/index/index.scss';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -46,7 +45,7 @@ const Sidebar = () => {
               </span>
               <h3 className='font-[500] text-[0.87rem] font-poppins'>Group Roles</h3>
             </Link>
-            <Link className="flex items-center relative no-underline" to="#">
+            <Link className={`flex items-center relative no-underline ${isActive('/admin/analytics') ? 'active' : ''}`} to="/admin/analytics">
               <span className="material-icons-sharp">
                     insights
               </span>

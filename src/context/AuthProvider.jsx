@@ -44,34 +44,21 @@ const AuthProvider = ({children}) => {
       // console.log('Fetch User Data:', data);
     } else {
       setAuth({...userDefault, isLoading: false});
+      // Handle errors here (e.g., show error message)
+      console.error('Failed to fetch user data:', response);
     }
   };
 
-  // define những router đã defined
-  const validRoutes = [
-    '/',
-    '/about',
-    '/FAQ',
-    '/users',
-    '/admin',
-    '/admin/users',
-    '/admin/roles',
-    '/admin/analytics',
-    '/admin/group-role',
-    '/admin/tickets',
-    '/users/edit',
-  ];
-
   useEffect(() => {
     // console.log(location.pathname);
-    const isPathValid = validRoutes.includes(location.pathname);
-    if (location && location.pathname !== '/login' && isPathValid) {
+    if (location) {
       fetchUser();
       // console.log('fetch');
     } else {
       setAuth((prevAuth) => ({...prevAuth, isLoading: false}));
     }
   }, [location]);
+
 
   return (
     <AuthContext.Provider value={{auth, loginContext, logoutContext}}>
