@@ -46,9 +46,9 @@ const AppRoutes = () => {
           <Route path="exercises" element={<SearchExercises />} />
 
           {/* authenticated routes */}
-          {auth && auth.account && auth.account.groupWithRoles && (
+          {auth && auth.account && auth.account.rolesWithPermission && (
             <Route element={<RequireAuth />}>
-              {(auth.account.groupWithRoles.id === 1 || auth.account.groupWithRoles.id === 3) && (
+              {(auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2) && (
                 <Route path="admin" element={<AdminLayout />}>
                   <Route path="" element={<Admin />} />
                   <Route path="users" element={<UsersManage />} />
@@ -58,7 +58,7 @@ const AppRoutes = () => {
                   <Route path="ticket" element={<Admin />} />
                 </Route>
               )}
-              {auth.account.groupWithRoles.id === 4 && (
+              {auth.account.rolesWithPermission.id === 3 && (
                 <Route path="users" element={<Users />}>
                   <Route path="users/edit" element={<UsersEdit />} />
                 </Route>

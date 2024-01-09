@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, {createContext, useEffect, useState} from 'react';
 import {getUserAccount} from '../services/userService';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
+import PropTypes from 'prop-types'; // Import PropTypes
 
 const AuthContext = createContext(null);
 
 const AuthProvider = ({children}) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const userDefault = {
     isLoading: true,
     isAuthenticated: false,
@@ -24,40 +26,42 @@ const AuthProvider = ({children}) => {
   };
 
   const fetchUser = async () => {
-    const response = await getUserAccount();
+    try {
+      const response = await getUserAccount();
 
-    if (response && +response.EC === 0) {
-      const groupWithRoles = response.DT.groupWithRoles;
-      const email = response.DT.email;
-      const username = response.DT.username;
-      const token = response.DT.access_token;
+      if (response && +response.EC === 0) {
+        const rolesWithPermission = response.DT.rolesWithPermission;
+        const email = response.DT.email;
+        const username = response.DT.username;
 
-      const data = {
-        isAuthenticated: true,
-        token,
-        account: {groupWithRoles, email, username},
-        isLoading: false,
-      };
+        const data = {
+          isAuthenticated: true,
+          account: {rolesWithPermission, email, username},
+          isLoading: false,
+        };
 
-      setAuth(data);
-      // // Log the data
-      // console.log('Fetch User Data:', data);
-    } else {
+        setAuth(data);
+      } else {
+        setAuth({...userDefault, isLoading: false});
+        console.log('Failed to fetch user data:', response);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
       setAuth({...userDefault, isLoading: false});
-      // Handle errors here (e.g., show error message)
-      console.error('Failed to fetch user data:', response);
     }
   };
 
   useEffect(() => {
-    // console.log(location.pathname);
-    if (location) {
+    if (location.pathname) {
       fetchUser();
-      // console.log('fetch');
     } else {
       setAuth((prevAuth) => ({...prevAuth, isLoading: false}));
     }
-  }, [location]);
+  }, [navigate]);
+
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
 
 
   return (
@@ -65,6 +69,11 @@ const AuthProvider = ({children}) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Add prop validation
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export {AuthContext, AuthProvider};

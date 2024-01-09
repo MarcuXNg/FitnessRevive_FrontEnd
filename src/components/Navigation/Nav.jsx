@@ -45,9 +45,10 @@ const NavHeader = (props) => {
 
   // handle logout
   const handleLogout = async () => {
+    console.log('test');
     let data = await logoutUser(); // clear cookies
     localStorage.removeItem('jwt'); // clear localStorage
-    logoutContext(); // clear user in context
+    await logoutContext(); // clear user in context
 
     if (data && +data.EC === 0) {
       toast.success('logout successfully');
@@ -249,13 +250,13 @@ const NavHeader = (props) => {
                     </div>
                     <NavLink
                       to={
-                        auth && auth.account && auth.account.groupWithRoles ?
-                          auth.account.groupWithRoles.id === 1 || auth.account.groupWithRoles.id === 3 ?
+                        auth && auth.account && auth.account.rolesWithPermission ?
+                          auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2 ?
                             '/admin' :
-                            auth.account.groupWithRoles.id === 4 ?
+                            auth.account.rolesWithPermission.id === 3 ?
                             '/users' :
                             '/login' : // Set a default route if needed
-                          '/login' // Set a default route if auth or account or groupWithRoles is not available
+                          '/login' // Set a default route if auth or account or rolesWithPermission is not available
                       }
                       className="nav-a font-poppins hover:mb-[0.6rem]"
                     >
@@ -351,8 +352,9 @@ const NavHeader = (props) => {
                               // fontWeight: 400,
                               fontFamily: 'Poppins, sans-serif',
                             }}
+                            onClick={handleLogout}
                           >
-                            <span onClick={handleLogout}>Log out</span>
+                            Log out
                           </MenuItem>
                         </Menu>
                       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // import
 import React, {useEffect, useState} from 'react'; // react
 import {Helmet, HelmetProvider} from 'react-helmet-async'; // helmet
@@ -66,7 +67,7 @@ const Login = () => {
       const response = await loginUser(ValueLogin, PasswordLogin);
       if (response && +response.EC === 0) {
         // success
-        const groupWithRoles = response.EC.groupWithRoles;
+        const rolesWithPermission = response.EC.rolesWithPermission;
         const email = response.EC.email;
         const username = response.EC.username;
         const token = response.DT.access_token;
@@ -74,14 +75,17 @@ const Login = () => {
         const data = {
           isAuthenticated: true,
           token,
-          account: {groupWithRoles, email, username},
+          account: {rolesWithPermission, email, username},
         };
 
         localStorage.setItem('jwt', token);
+        // update context
         loginContext(data);
-        // succes
+
+        // success
         toast.success(response.EM);
-        // navigate
+
+        // navigate after setting auth
         navigate('/');
       }
       if (response && +response.EC !== 0) {
@@ -271,6 +275,24 @@ const Login = () => {
     return true;
   };
 
+  const validateUsername = async () => {
+    try {
+      const loginGmailCheck = /^[a-zA-Z0-9]+$/.test(ValueLogin);
+      // Check if the username is not empty and contains only alphanumeric characters
+      if (loginGmailCheck) {
+        // Sanitize the username (remove any potentially dangerous characters)
+        const sanitizedUsername = ValueLogin.replace(/[<>&"']/g, '');
+        return sanitizedUsername;
+      } else {
+        // If validation fails, return null or throw an error
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   // handleRegister for button press
   const handleRegister = async () => {
     // validation
@@ -315,26 +337,34 @@ const Login = () => {
     }
   }, [isActive]);
 
+  // useEffect(() => {
+  //   if (auth && auth.isAuthenticated) {
+  //     if (auth.account && auth.account.rolesWithPermission) {
+  //       const groupId = auth.account.rolesWithPermission.id;
+  //       if (groupId === 1 || groupId === 2) {
+  //         return navigate('/admin');
+  //       } else if (groupId === 3) {
+  //         return navigate('/users');
+  //       } else {
+  //         // Handle the case when auth.account.rolesWithPermission.id is neither 1, 3, nor 4
+  //         // For example, navigate to a default page or show an error message.
+  //         return navigate('/'); // Adjust the default route accordingly
+  //       }
+  //     } else {
+  //       // Handle the case when auth.account.rolesWithPermission is not available
+  //       // For example, navigate to a default page or show an error message.
+  //       return navigate('/'); // Adjust the default route accordingly
+  //     }
+  //   }
+  // }, []);
+
+  // useEffect to handle navigation after loginContext is complete
   useEffect(() => {
     if (auth && auth.isAuthenticated) {
-      if (auth.account && auth.account.groupWithRoles) {
-        const groupId = auth.account.groupWithRoles.id;
-        if (groupId === 1 || groupId === 3) {
-          return navigate('/admin');
-        } else if (groupId === 4) {
-          return navigate('/users');
-        } else {
-          // Handle the case when auth.account.groupWithRoles.id is neither 1, 3, nor 4
-          // For example, navigate to a default page or show an error message.
-          return navigate('/'); // Adjust the default route accordingly
-        }
-      } else {
-        // Handle the case when auth.account.groupWithRoles is not available
-        // For example, navigate to a default page or show an error message.
-        return navigate('/'); // Adjust the default route accordingly
-      }
+      navigate('/'); // Navigate here after loginContext is complete
+      console.log('navigate');
     }
-  }, []);
+  }, [auth, navigate]);
 
   return (
     <HelmetProvider>
