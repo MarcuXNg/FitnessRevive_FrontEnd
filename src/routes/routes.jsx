@@ -50,7 +50,7 @@ const AppRoutes = () => {
             <Route element={<RequireAuth />}>
               {(auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2) && (
                 <Route path="admin" element={<AdminLayout />}>
-                  <Route path="" element={<Admin />} />
+                  <Route path="dashboard" element={<Admin />} />
                   <Route path="users" element={<UsersManage />} />
                   <Route path="roles" element={<RolesManage />} />
                   <Route path="group-role" element={<GroupRole />} />

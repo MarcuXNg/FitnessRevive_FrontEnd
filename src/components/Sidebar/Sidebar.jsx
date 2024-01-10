@@ -21,7 +21,7 @@ const Sidebar = () => {
         </Helmet>
         <aside className='h-[100vh]'>
           <div className="font-poppins sidebar flex flex-col relative bg-[#fff] rounded-[15px] h-[88vh] t-[1.5rem]">
-            <Link className={`flex items-center relative no-underline ${isActive('/admin') ? 'active' : ''}`} to="/admin">
+            <Link className={`flex items-center relative no-underline ${isActive('/admin/dashboard') ? 'active' : ''}`} to="/admin/dashboard">
               <span className="material-symbols-outlined">
                     dashboard
               </span>
