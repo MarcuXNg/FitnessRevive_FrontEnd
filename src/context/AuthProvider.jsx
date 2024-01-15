@@ -1,71 +1,49 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, {createContext, useEffect, useState} from 'react';
-import {getUserAccount} from '../services/userService';
-import {useLocation, useNavigate} from 'react-router-dom';
+import React, {createContext, useEffect} from 'react';
+import {useDispatch} from 'react-redux';
+import {updateToken, updateUserData, setError, updateLoadingState} from '../hooks/authSlice.js';
+import useInstance from '../setup/instance';
 import PropTypes from 'prop-types'; // Import PropTypes
+
 
 const AuthContext = createContext(null);
 
 const AuthProvider = ({children}) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const userDefault = {
-    isLoading: true,
-    isAuthenticated: false,
-    token: '',
-    account: {},
-  };
-  const [auth, setAuth] = useState(userDefault);
-
-  const loginContext = (userData) => {
-    setAuth({...userData, isLoading: false});
-  };
-
-  const logoutContext = () => {
-    setAuth({...userDefault, isLoading: false});
-  };
+  const {instance, controller} = useInstance();
+  const dispatch = useDispatch();
 
   const fetchUser = async () => {
     try {
-      const response = await getUserAccount();
+      const response = await instance.get(`/account`);
 
-      if (response && +response.EC === 0) {
-        const rolesWithPermission = response.DT.rolesWithPermission;
-        const email = response.DT.email;
-        const username = response.DT.username;
+      if (response && response.data && +response.data.EC === 0) {
+        const rolesWithPermission = response.data.DT.rolesWithPermission;
+        const email = response.data.DT.email;
+        const username = response.data.DT.username;
+        const token = response.data.DT.access_token;
 
-        const data = {
-          isAuthenticated: true,
-          account: {rolesWithPermission, email, username},
-          isLoading: false,
-        };
-
-        setAuth(data);
+        dispatch(updateUserData({rolesWithPermission, email, username}));
+        dispatch(updateLoadingState());
+        dispatch(updateToken({token}));
       } else {
-        setAuth({...userDefault, isLoading: false});
+        dispatch(setError());
         console.log('Failed to fetch user data:', response);
       }
     } catch (error) {
+      dispatch(setError());
       console.error('Error fetching user data:', error);
-      setAuth({...userDefault, isLoading: false});
+    } finally {
+      controller.abort();
     }
   };
 
   useEffect(() => {
-    if (location.pathname) {
-      fetchUser();
-    } else {
-      setAuth((prevAuth) => ({...prevAuth, isLoading: false}));
-    }
-  }, [navigate]);
-
-  // useEffect(() => {
-  //   fetchUser();
-  // }, []);
-
+    fetchUser();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{auth, loginContext, logoutContext}}>
+    <AuthContext.Provider value={{}}>
       {children}
     </AuthContext.Provider>
   );

@@ -2,6 +2,8 @@ import * as React from 'react'; // import * as React from 'react'; imports the e
 import {createRoot} from 'react-dom/client'; // create a root element for the ReactDOM to render into or create a root element for rendering your React application.
 import {BrowserRouter, Route, Routes} from 'react-router-dom'; // BrowserRouter: A component that provides the routing infrastructure for your application. Route: A component that renders a UI component when the path matches its path prop. Routes: A container for Route components that defines your application's routes.
 import '@fortawesome/fontawesome-free/css/all.min.css'; // import fontawesome
+import {Provider} from 'react-redux'; // redux
+import store from './redux/store.js'; // redux store import
 
 import App from './routes/App.jsx'; // import App.jsx
 import {AuthProvider} from './context/AuthProvider.jsx'; // import AuthProvider
@@ -13,13 +15,15 @@ import 'font-awesome/css/font-awesome.min.css'; // import font-awesome
 const rootElement = document.getElementById('root'); // get the element with the id root, usually a div
 
 createRoot(rootElement).render(
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/*" element={<App />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>,
+    <Provider store={store}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </Provider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

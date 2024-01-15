@@ -9,13 +9,14 @@ import {NavLink, useLocation, useNavigate} from 'react-router-dom';
 import {HelmetProvider, Helmet} from 'react-helmet-async';
 
 // Authenticated
-import {useAuth} from '../../hooks/useAuth.jsx';
+import {useDispatch, useSelector} from 'react-redux';
+import {logout} from '../../hooks/authSlice';
 
 // toast
 import {toast} from 'react-toastify';
 
 // logout service
-import {logoutUser} from '../../services/userService';
+import {logoutUser} from '../../services/authService';
 
 // Mui material
 import {Stack, Typography} from '@mui/material';
@@ -26,8 +27,9 @@ import Divider from '@mui/material/Divider';
 
 const NavHeader = (props) => {
   // authencation
-  const {auth, logoutContext} = useAuth();
-  // console.log(auth);
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   // get the location
   const location = useLocation();
 
@@ -45,13 +47,12 @@ const NavHeader = (props) => {
 
   // handle logout
   const handleLogout = async () => {
-    console.log('test');
     let data = await logoutUser(); // clear cookies
-    localStorage.removeItem('jwt'); // clear localStorage
-    await logoutContext(); // clear user in context
+
+    dispatch(logout()); // clear user data in context
 
     if (data && +data.EC === 0) {
-      toast.success('logout successfully');
+      toast.success('Goodbye');
       navigate('/login');
     } else {
       toast.error(data.EM);
@@ -93,206 +94,191 @@ const NavHeader = (props) => {
     setUserProfileAnchorEl(null); // profile dropdown
   }, [location.pathname]);
 
-  // path that show navigation headers
-  const validPaths = [
-    '/',
-    '/about',
-    '/FAQ',
-    '/users',
-    '/users/edit',
-    '/admin/dashboard',
-    '/admin/roles',
-    '/admin/users',
-    '/admin/group-role',
-    '/admin/analytics',
-  ];
-
-  if (validPaths.includes(location.pathname)) {
-    return (
-      <>
-        <HelmetProvider>
-          <Helmet>
-            <link
-              href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-              rel="stylesheet"
-            />
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link
-              rel="preconnect"
-              href="https://fonts.gstatic.com"
-              crossOrigin
-            />
-            <link
-              href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
-              rel="stylesheet"
-            />
-            <link
-              rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-            />
-          </Helmet>
-          <nav className="flex items-center shadow-sm shadow-[#0000005e] fixed top-0 w-[1920px] h-[80px] bg-[#F5F5F5] dark:bg-slate-800 z-[9999]">
-            <div className="nav-header w-[1774px] mx-auto justify-center">
-              <Stack
-                direction="row"
-                spacing={12}
-                className="items-center my-[7px]"
-              >
-                <div>
-                  <Stack
-                    direction="row"
-                    justifyContent="flex-start"
-                    className="font-poppins whitespace-nowrap"
+  return (
+    <>
+      <HelmetProvider>
+        <Helmet>
+          <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+            rel="stylesheet"
+          />
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+          />
+        </Helmet>
+        <nav className="flex items-center shadow-sm shadow-[#0000005e] fixed top-0 w-[1920px] h-[80px] bg-[#F5F5F5] dark:bg-slate-800 z-[9999]">
+          <div className="nav-header w-[1774px] mx-auto justify-center">
+            <Stack
+              direction="row"
+              spacing={12}
+              className="items-center my-[7px]"
+            >
+              <div>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-start"
+                  className="font-poppins whitespace-nowrap"
+                >
+                  <NavLink
+                    to="/"
+                    className="font-poppins font-bold flex items-center"
                   >
-                    <NavLink
-                      to="/"
-                      className="font-poppins font-bold flex items-center"
-                    >
-                      <img
-                        src={process.env.PUBLIC_URL + '/logo/logo.png'}
-                        className="w-[48px]"
-                        alt="Logo"
-                      />
-                      <span className="ml-2">Fitness Revive</span>
-                    </NavLink>
-                  </Stack>
-                </div>
-                <div className="container">
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    justifyContent="center"
-                    alignItems="center"
+                    <img
+                      src={process.env.PUBLIC_URL + '/logo/logo.png'}
+                      className="w-[48px]"
+                      alt="Logo"
+                    />
+                    <span className="ml-2">Fitness Revive</span>
+                  </NavLink>
+                </Stack>
+              </div>
+              <div className="container">
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  {/* Home */}
+                  <NavLink
+                    to="/"
+                    className="nav-a font-poppins hover:mb-[0.6rem]"
                   >
-                    {/* Home */}
-                    <NavLink
-                      to="/"
-                      className="nav-a font-poppins hover:mb-[0.6rem]"
-                    >
                       Home
-                    </NavLink>
-                    {/* About */}
-                    <NavLink
-                      to="/about"
-                      className="nav-a font-poppins hover:mb-[0.6rem]"
-                    >
+                  </NavLink>
+                  {/* About */}
+                  <NavLink
+                    to="/about"
+                    className="nav-a font-poppins hover:mb-[0.6rem]"
+                  >
                       About
-                    </NavLink>
-                    {/* FAQ */}
-                    <NavLink
-                      to="/FAQ"
-                      className="nav-a font-poppins hover:mb-[0.6rem]"
-                    >
+                  </NavLink>
+                  {/* FAQ */}
+                  <NavLink
+                    to="/FAQ"
+                    className="nav-a font-poppins hover:mb-[0.6rem]"
+                  >
                       FAQ
-                    </NavLink>
-                    {/* Features */}
-                    <div>
-                      <Typography
-                        className="nav-a hover:mb-[0.6rem]"
-                        sx={{
-                          color: 'black',
-                          fontFamily: 'Poppins, sans-serif',
-                          textTransform: 'none',
-                          fontSize: '16px',
-                          fontWeight: '400',
-                          cursor: 'pointer',
-                        }} // css
-                        aria-controls={open ? 'features-menu' : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                      >
+                  </NavLink>
+                  {/* Features */}
+                  <div>
+                    <Typography
+                      className="nav-a hover:mb-[0.6rem]"
+                      sx={{
+                        color: 'black',
+                        fontFamily: 'Poppins, sans-serif',
+                        textTransform: 'none',
+                        fontSize: '16px',
+                        fontWeight: '400',
+                        cursor: 'pointer',
+                      }} // css
+                      aria-controls={open ? 'features-menu' : undefined}
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                    >
                         Features
-                      </Typography>
-                      <Menu
-                        id="features-menu"
-                        sx={{
-                          top: '8px',
-                          zIndex: '9999',
-                        }}
-                        open={open}
-                        onClose={handleClose}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
+                    </Typography>
+                    <Menu
+                      id="features-menu"
+                      sx={{
+                        top: '8px',
+                        zIndex: '9999',
+                      }}
+                      open={open}
+                      onClose={handleClose}
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                      }}
+                    >
+                      <MenuItem
+                        onClick={bmi}
+                        style={{
+                          // Use inline styles
+                          fontFamily: 'Poppins, sans-serif',
                         }}
                       >
-                        <MenuItem
-                          onClick={bmi}
-                          style={{
-                            // Use inline styles
-                            fontFamily: 'Poppins, sans-serif',
-                          }}
-                        >
                           BMI / BMR
-                        </MenuItem>
-                        <MenuItem
-                          style={{
-                            // Use inline styles
-                            fontFamily: 'Poppins, sans-serif',
-                          }}
-                        >
+                      </MenuItem>
+                      <MenuItem
+                        style={{
+                          // Use inline styles
+                          fontFamily: 'Poppins, sans-serif',
+                        }}
+                      >
                           Calories
-                        </MenuItem>
-                        <MenuItem
-                          style={{
-                            // Use inline styles
-                            fontFamily: 'Poppins, sans-serif',
-                          }}
-                        >
+                      </MenuItem>
+                      <MenuItem
+                        style={{
+                          // Use inline styles
+                          fontFamily: 'Poppins, sans-serif',
+                        }}
+                      >
                           Exercises
-                        </MenuItem>
-                      </Menu>
-                    </div>
-                    <NavLink
-                      to={
+                      </MenuItem>
+                    </Menu>
+                  </div>
+                  <NavLink
+                    to={
                         auth && auth.account && auth.account.rolesWithPermission ?
                           auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2 ?
                             '/admin/dashboard' :
                             auth.account.rolesWithPermission.id === 3 ?
-                            '/users' :
+                            '/user/dashboard' :
                             '/login' : // Set a default route if needed
                           '/login' // Set a default route if auth or account or rolesWithPermission is not available
-                      }
-                      className="nav-a font-poppins hover:mb-[0.6rem]"
-                    >
-                      Dashboard
-                    </NavLink>
-                  </Stack>
-                </div>
-                <Stack
-                  direction="row"
-                  justifyContent="flex-end"
-                  className="items-center justify-center"
-                  spacing={3}
-                >
-                  <div
-                    id="dark-mode"
-                    className="flex justify-between items-center cursor-pointer h-[1.6rem] w-[3rem] rounded-[0.4rem]"
+                    }
+                    className="nav-a font-poppins hover:mb-[0.6rem]"
                   >
-                    <span
-                      className={`material-icons-sharp flex items-center justify-center ${
+                      Dashboard
+                  </NavLink>
+                </Stack>
+              </div>
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                className="items-center justify-center"
+                spacing={3}
+              >
+                <div
+                  id="dark-mode"
+                  className="flex justify-between items-center cursor-pointer h-[1.6rem] w-[3rem] rounded-[0.4rem]"
+                >
+                  <span
+                    className={`material-icons-sharp flex items-center justify-center ${
                         activeIndex === 0 ? 'active' : ''
-                      }`}
-                      onClick={() => toggleActive(0)}
-                    >
+                    }`}
+                    onClick={() => toggleActive(0)}
+                  >
                       light_mode
-                    </span>
-                    <span
-                      className={`material-icons-sharp flex items-center justify-center ${
+                  </span>
+                  <span
+                    className={`material-icons-sharp flex items-center justify-center ${
                         activeIndex === 1 ? 'active' : ''
-                      }`}
-                      onClick={() => toggleActive(1)}
-                    >
+                    }`}
+                    onClick={() => toggleActive(1)}
+                  >
                       dark_mode
-                    </span>
-                  </div>
-                  <div>
-                    {auth && auth.isAuthenticated ? (
+                  </span>
+                </div>
+                <div>
+                  {auth && auth.isAuthenticated ? (
                       // If user is authenticated, render Logout button
                       <div>
                         <div className="group flex items-center">
@@ -382,17 +368,14 @@ const NavHeader = (props) => {
                         Login
                       </Button>
                     )}
-                  </div>
-                </Stack>
+                </div>
               </Stack>
-            </div>
-          </nav>
-        </HelmetProvider>
-      </>
-    );
-  } else {
-    return <></>;
-  }
+            </Stack>
+          </div>
+        </nav>
+      </HelmetProvider>
+    </>
+  );
 };
 
 export default NavHeader;

@@ -1,22 +1,68 @@
 /* eslint-disable no-unused-vars */
 import React, {useEffect, useState} from 'react';
-import {useAuth} from '../../hooks/useAuth';
+import {useSelector} from 'react-redux';
 import {HelmetProvider, Helmet} from 'react-helmet-async';
 import CircleProgressBar from '../../components/ProgressBar/CircleProgressBar';
-import {countAllUserPerWeek, countAllUser} from '../../services/userService';
+import useInstance from '../../setup/instance';
 
 const AdminAnalytics = () => {
   // auth
-  const {auth} = useAuth();
 
-  // count user
+  const auth = useSelector((state) => state.auth);
+
+  const {instance, controller} = useInstance();
+
+  // count user api call
   const [userCount, setUserCount] = useState(0);
+  const [usersData, setUsersData] = useState([]);
+  const countAllUser = async () => {
+    try {
+      return await instance.get(`/users/count`);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+
+  const countAllUserPerWeek = async () => {
+    try {
+      return await instance.get(`/users/count-per-week`);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+
+  const getAllUser = async () => {
+    try {
+      return await instance.get(`/users`);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
   const countUser = async () => {
     try {
       if (auth.isAuthenticated) {
-        const data = await countAllUser();
-        const count = data.DT;
+        const res = await countAllUser();
+        const count = res.data.DT;
         setUserCount(count);
+      }
+    } catch (error) {
+      console.log(error);
+    };
+  };
+
+  const getUser = async () => {
+    try {
+      if (auth.isAuthenticated) {
+        const res = await getAllUser();
+        const userData = res.data.DT;
+        setUsersData(userData);
+        console.log(res);
       }
     } catch (error) {
       console.log(error);
@@ -32,7 +78,7 @@ const AdminAnalytics = () => {
       if (auth.isAuthenticated) {
         const res = await countAllUserPerWeek();
         // console.log(res);
-        return res.DT;
+        return res.data.DT;
       }
     } catch (error) {
       console.log(error);
@@ -60,13 +106,16 @@ const AdminAnalytics = () => {
     }
   };
 
-  // useEffect for countUser function
-  useEffect(() => {
-    countUser();
-  }, []);
+  const formatDate = (dateTimeString) => {
+    const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+    const locale = 'en-GB'; // Set the locale to a region where "DD/MM/YYYY" is standard
+    return new Date(dateTimeString).toLocaleDateString(locale, options);
+  };
 
-  // useEffect for progress bar (runs once on mount)
+  // useEffect (runs once on mount)
   useEffect(() => {
+    getUser();
+    countUser();
     updateUserProcess();
   }, []);
 
@@ -84,6 +133,7 @@ const AdminAnalytics = () => {
         </Helmet>
         <h1 className='font-poppins text-[30px] font-medium'>Analytics</h1>
         {/* <!-- Analyses --> */}
+        <h2 className='font-poppins text-[20px] font-normal'>Overall</h2>
         <div className="analyse grid grid-cols-3 gap-[1.6rem]">
           <div className="overall">
             <div className="flex status items-center justify-between">
@@ -147,7 +197,14 @@ const AdminAnalytics = () => {
         <div className="new-users">
           <h2 className='font-poppins text-[20px] font-normal'>New Users</h2>
           <div className="user-list flex justify-around flex-wrap">
-            <div className="user flex flex-col items-center justify-center">
+            {usersData.map((user, index) => (
+              <div key={index} className="user flex flex-col items-center justify-center">
+                <img src={process.env.PUBLIC_URL + '/user/male.png'} alt={`user-${index}`} />
+                <h2 className='font-poppins text-[20px] font-medium'>{user.first_name}</h2>
+                <p className='font-poppins'>Joined at {formatDate(user.User.createdAt)}</p>
+              </div>
+            ))}
+            {/* <div className="user flex flex-col items-center justify-center">
               <img src={process.env.PUBLIC_URL + '/user/male.png'}/>
               <h2 className='font-poppins text-[20px] font-medium'>Jack</h2>
               <p className='font-poppins'>Joined at 11/11/2023</p>
@@ -161,7 +218,7 @@ const AdminAnalytics = () => {
               <img src={process.env.PUBLIC_URL + '/user/male.png'}/>
               <h2 className='font-poppins text-[20px] font-medium'>Jack</h2>
               <p className='font-poppins'>Joined at 11/11/2023</p>
-            </div>
+            </div> */}
             <div className="user flex flex-col items-center justify-center">
               <a className="border-2 border-[#3a333399] flex items-center relative no-underline" href="/admin/users">
                 <span className="material-symbols-outlined pl-[3px]">

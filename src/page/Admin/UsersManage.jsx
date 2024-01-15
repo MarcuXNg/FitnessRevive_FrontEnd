@@ -3,12 +3,27 @@
 import React, {useEffect, useState} from 'react';
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/20/solid';
 import ReactPaginate from 'react-paginate'; // paginate
-import {deleteUser, fetchAllUser} from '../../services/userService'; // fetchUser service
 import {toast} from 'react-toastify';
-import ModalDelete from './ModalDelete';
-import ModalUser from './ModalUser';
+import ModalDelete from '../../components/Popup/ModalDelete';
+import ModalUser from '../../components/Popup/ModalUser';
+import useInstance from '../../setup/instance';
 
 const UsersManage = () => {
+  const {instance, controller} = useInstance();
+
+  // delete User
+  const deleteUser = async (user) => {
+    try {
+      const userId = user.id;
+      // console.log(userId);
+      return await instance.delete(`/users/delete`, {data: {id: userId}});
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+
   // action Modal
   const [actionModalUser, setActionModalUser] = useState('');
   // Data Modal
@@ -29,15 +44,16 @@ const UsersManage = () => {
   // fetchUsers function (fetch all users)
   const fetchUsers = async () => {
     try {
-      let response = await fetchAllUser(currentPage, currentLimit);
-      // console.log(response);
-      if (response && response.EC === 0) {
-        // console.log(response.DT);
-        setTotalPages(response.DT.totalPages);
-        setListUsers(response.DT.users);
+      let response = await instance.get(`/users/read?page=${currentPage}&limit=${currentLimit}`);
+
+      if (response && response.data && response.data.EC === 0) {
+        setTotalPages(response.data.DT.totalPages);
+        setListUsers(response.data.DT.users);
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.log('Error fetching users:', error);
+    } finally {
+      controller.abort();
     };
   };
 
@@ -51,22 +67,19 @@ const UsersManage = () => {
 
   // show confirm pop up Func
   const handleDeleteUser = (user) => {
-    // console.log(user);
     setDataModel(user);
-    // console.log(dataModel);
     setUSerDeleteShow(true);
   };
 
   // user delete function
   const handleDelete = async () => {
     let response = await deleteUser(dataModel);
-    console.log(response);
-    if (response && response.EC === 0) {
-      toast.success(response.EM);
+    if (response && response.data && response.data.EC === 0) {
+      toast.success(response.data.EM);
       await fetchUsers();
       setUSerDeleteShow(false);
     } else {
-      toast.error(response.EM);
+      toast.error(response.data.EM);
     };
   };
 
@@ -125,7 +138,7 @@ const UsersManage = () => {
                   <th className="py-2 px-[2px] hover:bg-gray-200 border-r">Id</th>
                   <th className="py-2 px-4 hover:bg-gray-200 border-r">Email</th>
                   <th className="py-2 px-[10px] hover:bg-gray-200 border-r">Username</th>
-                  <th className="py-2 px-[2px] hover:bg-gray-200 border-r">Group</th>
+                  <th className="py-2 px-[2px] hover:bg-gray-200 border-r">Role</th>
                   <th className="py-2 px-[2px] hover:bg-gray-200 border-r">Action</th>
                 </tr>
               </thead>
@@ -133,14 +146,13 @@ const UsersManage = () => {
                 {listUsers && listUsers.length > 0 ?
                   <>
                     {listUsers.map((item, index) => {
-                      // console.log(item);
                       return (
                         <tr key={`row-${index}`} className="hover:bg-gray-200">
                           <td className="py-2 px-[2px] border-b border-r text-center">{(currentPage - 1) * currentLimit + index + 1}</td>
                           <td className="py-2 px-[2px] border-b border-r text-center">{item.id}</td>
                           <td className="py-2 px-4 border-b border-r">{item.email}</td>
                           <td className="py-2 px-[10px] border-b border-r">{item.first_name + ' ' + item.last_name }</td>
-                          <td className="py-2 px-[2px] border-b border-r text-center w-[100px]">{item ? item.groupName : ''}</td>
+                          <td className="py-2 px-[2px] border-b border-r text-center w-[100px]">{item ? item.roleName : ''}</td>
                           <td className="py-2 px-[2px] border-b text-center w-[250px]">
                             <button className='bg-yellow-400 text-white px-4 py-2 rounded-[8px] mr-2' onClick={() => handleEditUser(item)}><i className="fa-solid fa-pen-to-square mr-2"/>Edit</button>
                             <button className='bg-red-500 text-white px-4 py-2 rounded-[8px]'onClick={() => handleDeleteUser(item)}><i className="fa-solid fa-delete-left mr-2"/>Delete</button>

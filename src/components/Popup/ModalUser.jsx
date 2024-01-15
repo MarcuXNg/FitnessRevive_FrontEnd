@@ -7,9 +7,9 @@ import {UserPlusIcon} from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
 import {toast} from 'react-toastify';
 import _ from 'lodash';
-import {createNewUser, fetchGroup, updateCurrentUser} from '../../services/userService';
 
 import {Helmet, HelmetProvider} from 'react-helmet-async';
+import useInstance from '../../setup/instance';
 
 const countries = [
   'Afghanistan',
@@ -208,7 +208,7 @@ const countries = [
   'Yemen',
   'Zambia',
   'Zimbabwe',
-];
+]; // country lists
 
 const ModalUser = ({
   showUserCreate,
@@ -216,6 +216,8 @@ const ModalUser = ({
   action,
   dataModalUser,
 }) => {
+  const {instance, controller} = useInstance();
+
   const defaultUserData = {
     email: '',
     contact_number: '',
@@ -224,8 +226,8 @@ const ModalUser = ({
     password: '',
     state: '',
     city: '',
-    gender: '',
-    group: '',
+    gender: 'Male',
+    role: '',
     day: '',
     month: '',
     year: '',
@@ -243,15 +245,15 @@ const ModalUser = ({
     // state: true,
     // city: true,
     // gender: true,
-    group: true,
+    role: true,
     // day: true,
     // month: true,
     // year: true,
   };
 
-  const [userData, setUserData] = useState(defaultUserData);
+  const [userData, setUserData] = useState(defaultUserData); // userData
 
-  const [validInputs, setValidInputs] = useState(validInputsDefault);
+  const [validInputs, setValidInputs] = useState(validInputsDefault); // validInputs
 
   // Generate options for days, months, and years
   const days = Array.from({length: 31}, (_, i) => i + 1);
@@ -260,20 +262,50 @@ const ModalUser = ({
   const yearSpawn = 500; // how many years you want
   const years = Array.from({length: yearSpawn}, (_, i) => currentYear - i);
 
-  // Group state
-  const [userGroups, setUserGroups] = useState([]);
+  // Role state
+  const [userRoles, setUserRoles] = useState([]);
 
-  const getGroups = async () => {
-    let res = await fetchGroup();
+  // Role fetch
+  const fetchRole = async () => {
+    try {
+      return await instance.get(`/roles/read`);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+  // create user
+  const createNewUser = async (userData) => {
+    try {
+      return await instance.post(`/users/create`, {...userData});
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+  // update user
+  const updateCurrentUser = async (userData) => {
+    try {
+      // console.log('check push data:', userData);
+      return await instance.put(`/users/update`, {...userData});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getRoles = async () => {
+    let res = await fetchRole();
     // console.log(res);
-    if (res && res.EC === 0) {
-      setUserGroups(res.DT);
-      if (res.DT && res.DT.length > 0) {
-        let groups = res.DT;
-        setUserData({...userData, group: groups[0].id});
+    if (res && res.data && res.data.EC === 0) {
+      setUserRoles(res.data.DT);
+      if (res.data.DT && res.data.DT.length > 0) {
+        let roles = res.data.DT;
+        setUserData({...userData, role: roles[0].id});
       }
     } else {
-      toast.error(res.EM);
+      toast.error(res.data.EM);
     }
   };
 
@@ -285,9 +317,16 @@ const ModalUser = ({
     // Create a new Date object with the time set to 00:00:00 (midnight) for the selected day, month, and year
     const dateOfBirth = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay, 0, 0, 0));
 
+
+    // Check if the date is valid
+    if (isNaN(dateOfBirth.getTime())) {
+      // console.log('Invalid date');
+      return;
+    }
+
     // Format the date to a string in the "YYYY-MM-DD" format
     const formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0];
-    // console.log(formattedDateOfBirth);
+
     // Update the userData state with the calculated date_of_birth
     setUserData((userData) => ({
       ...userData,
@@ -307,7 +346,7 @@ const ModalUser = ({
     setValidInputs(validInputsDefault);
 
     // Define an array of field names to check for validation
-    let arr = ['email', 'password', 'first_name', 'last_name', 'group'];
+    let arr = ['email', 'password', 'first_name', 'last_name', 'role'];
 
     // Initialize the check variable to true
     let check = true;
@@ -342,24 +381,23 @@ const ModalUser = ({
 
     // If inputs are valid, proceed with further logic
     if (check === true) {
-      // console.log(userData);
       // Add your logic here for creating the user or any other action
-      let res = action === 'CREATE' ? await createNewUser({...userData, groupId: userData['group']}) : await updateCurrentUser({...userData, groupId: userData['group']});
-      if (res && res.EC === 0) {
+      let res = action === 'CREATE' ? await createNewUser({...userData, role: userData['role']}) : await updateCurrentUser({...userData, role: userData['role']});
+
+      if (res && res.data && res.data.EC === 0) {
         handleUserCreateClose();
-        setUserData({...defaultUserData, group: userGroups && userGroups.length > 0 ? userGroups[0].id : ''});
+        setUserData({...defaultUserData, role: userRoles && userRoles.length > 0 ? userRoles[0].id : ''});
       }
-      if (res && res.EC !== 0) {
-        toast.error(res.EM);
+      if (res && res.data && res.data.EC !== 0) {
+        toast.error(res.data.EM);
         let _validInputs = _.cloneDeep(validInputsDefault);
-        _validInputs[res.DT] = false;
+        _validInputs[res.data.DT] = false;
         setValidInputs(_validInputs);
       }
     }
   };
   const handleCancelUserCreate = async () => {
-    setUserData((defaultUserData) => ({...defaultUserData, group: userGroups[0].id}));
-    // setUserData({...defaultUserData, group: userGroups[0].id});
+    setUserData((defaultUserData) => ({...defaultUserData, role: userRoles[0].id}));
     handleUserCreateClose();
   };
 
@@ -374,7 +412,7 @@ const ModalUser = ({
   }, [userData.day, userData.month, userData.year]);
 
   useEffect(() => {
-    getGroups();
+    getRoles();
   }, []);
 
   useEffect(() => {
@@ -384,15 +422,15 @@ const ModalUser = ({
       let dobDay = dob.getDate().toString();
       let dobMonth = (dob.getMonth() + 1).toString(); // Months are zero-indexed
       let dobYear = dob.getFullYear().toString();
-      setUserData({...dataModalUser, group: dataModalUser ? dataModalUser.groupId : '', day: dataModalUser ? dobDay : '', month: dataModalUser ? dobMonth : '', year: dataModalUser ? dobYear : ''});
+      setUserData({...dataModalUser, role: dataModalUser ? dataModalUser.roleId : '', day: dataModalUser ? dobDay : '', month: dataModalUser ? dobMonth : '', year: dataModalUser ? dobYear : ''});
       // console.log(userData);
     }
   }, [dataModalUser, action]); // mỗi lần thay đổi giá trị này sẽ chạy vào hàm setUserData
 
   useEffect(() => {
     if (action === 'CREATE') {
-      if (userGroups && userGroups.length > 0) {
-        setUserData({...userData, group: userGroups[0].id, gender: 'Male', country: 'Afghanistan'});
+      if (userRoles && userRoles.length > 0) {
+        setUserData({...userData, role: userRoles[0].id, gender: 'Male', country: 'Afghanistan'});
       }
     }
   }, [action]);
@@ -672,27 +710,27 @@ const ModalUser = ({
                                 ))}
                               </select>
                             </div>
-                            {/* Group */}
+                            {/* Role */}
                             <div>
                               <label
-                                htmlFor="group"
+                                htmlFor="role"
                                 className="block text-sm font-medium text-gray-600 font-poppins"
                               >
-                              Group (<span className="text-red-500">*</span>):
+                              Role (<span className="text-red-500">*</span>):
                               </label>
                               <select
-                                id="group"
-                                name="group"
+                                id="role"
+                                name="role"
                                 className="p-[10px] px-[50px] rounded-[10px] focus:outline-none focus:ring-2 focus:border-blue-300 block sm:text-sm font-poppins"
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'group')}
-                                value={userData.group}
+                                onChange={(event) => handleOnChangeInput(event.target.value, 'role')}
+                                value={userData.role}
                               >
-                                {userGroups.length > 0 &&
-                                userGroups.map((item, index) => {
+                                {userRoles.length > 0 &&
+                                userRoles.map((item, index) => {
                                   return (
                                     // console.log(item)
                                     <option
-                                      key={`group-${index}`}
+                                      key={`role-${index}`}
                                       value={item.id}
                                     >
                                       {item.name}

@@ -5,17 +5,15 @@ import React from 'react';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {Hourglass} from 'react-loader-spinner';
-import {useAuth} from '../hooks/useAuth.jsx';
-// Navigation bar
-import NavHeader from '../components/Navigation/Nav';
-import '../styles/app/App.scss';
+// redux
+import {useSelector} from 'react-redux';
 
 // Routes
 import AppRoutes from './routes.jsx';
 
 
 const App = () => {
-  const {auth} = useAuth();
+  const auth = useSelector((state) => state.auth);
   return (
     <>
       <div className="app">
@@ -34,12 +32,6 @@ const App = () => {
           </div>
         ) : (
           <>
-            <div className="app-header">
-              <header>
-                <NavHeader />
-              </header>
-            </div>
-
             <div className="app-container">
               <AppRoutes />
             </div>

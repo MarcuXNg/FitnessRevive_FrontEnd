@@ -3,68 +3,79 @@ import {Routes, Route} from 'react-router-dom'; // react-router-dom
 import React from 'react'; // react
 
 // Authenticated
-import {useAuth} from '../hooks/useAuth.jsx';
+import {useSelector} from 'react-redux';
 
 // Router
-import Home from '../app/Home/Home.jsx'; // Homepage
-import About from '../app/About/About.jsx'; // About
-import FAQ from '../app/FAQ/FAQ.jsx'; // FAQ
-import Login from '../app/Login/Login.jsx'; // Login
-import ErrorPage from '../app/404/404.jsx'; // Error
-import Users from '../app/User/Users.jsx'; // User Dashboard
-import Layout from '../components/Layout/Layout.jsx'; // Parent Fragment
-import RequireAuth from '../components/RequireAuth/RequireAuth.jsx'; // Parent Fragment with auth
-import UsersEdit from '../app/User/UsersEdit.jsx'; // User edit
-import RolesManage from '../app/Roles/RolesManage.jsx'; // RolesManage
-import Admin from '../app/Admin/Admin.jsx'; // Admin
 import AdminLayout from '../components/Layout/AdminLayout.jsx'; // Admin Layout with sidebar
-import UsersManage from '../app/Admin/UsersManage.jsx'; // UserManage
-import SearchExercises from '../app/Exercise/SearchExercises.jsx';
-import GroupRole from '../app/GroupRole/GroupRole.jsx';
-import AdminAnalytics from '../app/Analytics/AdminAnalytics.jsx';
+import UserLayout from '../components/Layout/UserLayout.jsx';
+import Layout from '../components/Layout/Layout.jsx'; // Parent Fragment
+import NavLayout from '../components/Layout/NavLayout.jsx';
+
+import Home from '../page/Home/Home.jsx'; // Homepage
+import About from '../page/About/About.jsx'; // About
+import FAQ from '../page/FAQ/FAQ.jsx'; // FAQ
+import Login from '../page/Login/Login.jsx'; // Login
+import ErrorPage from '../page/error/404.jsx'; // Error
+
+import RequireAuth from '../components/RequireAuth/RequireAuth.jsx'; // Parent Fragment with auth
+import UsersEdit from '../page/User/UsersEdit.jsx'; // User edit
+import PermissionsManage from '../page/Permission/PermissionsManage.jsx'; // PermissionsManage
+import Admin from '../page/Admin/Admin.jsx'; // Admin
+
+import UsersManage from '../page/Admin/UsersManage.jsx'; // UserManage
+import SearchExercises from '../page/Exercise/SearchExercises.jsx';
+import RolePermission from '../page/Role/RolePermission.jsx';
+import AdminAnalytics from '../page/Analytics/AdminAnalytics.jsx';
+
+import Users from '../page/User/Users.jsx'; // User Dashboard
+
 
 const AppRoutes = () => {
   /**
    * ['/users/show'. /users/update]
    *
-   *
    */
 
   // authencation
-  const {auth} = useAuth();
+  const auth = useSelector((state) => state.auth);
+
   // console.log(auth);
 
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="login" element={<Login />} />
-          <Route path="about" element={<About />} />
-          <Route path="faq" element={<FAQ />} />
-          <Route path="exercises" element={<SearchExercises />} />
+          <Route path="/" element={<NavLayout />}>
+            {/* public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="about" element={<About />} />
+            <Route path="faq" element={<FAQ />} />
+            <Route path="exercises" element={<SearchExercises />} />
 
-          {/* authenticated routes */}
-          {auth && auth.account && auth.account.rolesWithPermission && (
-            <Route element={<RequireAuth />}>
-              {(auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2) && (
-                <Route path="admin" element={<AdminLayout />}>
-                  <Route path="dashboard" element={<Admin />} />
-                  <Route path="users" element={<UsersManage />} />
-                  <Route path="roles" element={<RolesManage />} />
-                  <Route path="group-role" element={<GroupRole />} />
-                  <Route path="analytics" element={<AdminAnalytics />} />
-                  <Route path="ticket" element={<Admin />} />
-                </Route>
-              )}
-              {auth.account.rolesWithPermission.id === 3 && (
-                <Route path="users" element={<Users />}>
-                  <Route path="users/edit" element={<UsersEdit />} />
-                </Route>
-              )}
-            </Route>
-          )}
+            {/* authenticated routes */}
+            {auth && auth.account && auth.account.rolesWithPermission && (
+              <Route element={<RequireAuth />}>
+                {(auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2) && (
+                  <Route path="admin" element={<AdminLayout />}>
+                    <Route path="dashboard" element={<Admin />} />
+                    <Route path="users" element={<UsersManage />} />
+                    <Route path="permissions" element={<PermissionsManage />} />
+                    <Route path="roles" element={<RolePermission />} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="ticket" element={<Admin />} />
+                  </Route>
+                )}
+                {auth.account.rolesWithPermission.id === 3 && (
+                  <Route path='user' element={<UserLayout />}>
+                    <Route path="dashboard" element={<Users />} />
+                    <Route path="users-edit" element={<UsersEdit />} />
+                  </Route>
+                )}
+              </Route>
+            )}
+          </Route>
+
 
           {/* catch all */}
           <Route path="*" element={<ErrorPage />} />

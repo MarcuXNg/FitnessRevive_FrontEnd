@@ -1,11 +1,11 @@
 import {Outlet, Navigate} from 'react-router-dom';
-import {useAuth} from '../../hooks/useAuth';
+import {useSelector} from 'react-redux';
 import React from 'react';
 
 const RequireAuth = () => {
-  const {auth} = useAuth();
+  const auth = useSelector((state) => state.auth);
 
-  // console.log(auth);
+
   if (auth && auth.isAuthenticated === true) {
     return (
       <main className="PrivateRouter">

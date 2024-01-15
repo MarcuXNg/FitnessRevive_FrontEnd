@@ -10,16 +10,17 @@ instance.defaults.withCredentials = true;
 
 // // Alter defaults after instance has been created
 // instance.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('jwt')}`;
+instance.defaults.headers.common['Content-Type'] = 'application/json';
 
 // Add a request interceptor
 instance.interceptors.request.use(function(config) {
-  // Log request headers
-  const token = localStorage.getItem('jwt');
-  if (token) {
-    // Set 'Authorization' header if a valid token exists
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-  // console.log('Request Headers:', config.headers);
+  // // Log request headers
+  // const token = localStorage.getItem('jwt');
+  // if (token) {
+  //   // Set 'Authorization' header if a valid token exists
+  //   config.headers['Authorization'] = `Bearer ${token}`;
+  // }
+
   // Do something before request is sent
   return config;
 }, function(error) {
@@ -28,7 +29,7 @@ instance.interceptors.request.use(function(config) {
 });
 
 // Add a response interceptor
-instance.interceptors.response.use(function(response) {
+instance.interceptors.response.use(function(response) { // The response interceptor handles different HTTP status codes
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
   return response.data;
@@ -78,4 +79,5 @@ instance.interceptors.response.use(function(response) {
   }
 });
 
+// Export the instance
 export default instance;

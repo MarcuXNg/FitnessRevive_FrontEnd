@@ -1,20 +1,17 @@
-/* eslint-disable no-unused-vars */
 // import
 import React, {useEffect, useState} from 'react'; // react
 import {Helmet, HelmetProvider} from 'react-helmet-async'; // helmet
 
-import '../../styles/index/index.scss';
-
 import {toast} from 'react-toastify'; // toast notify
 import {Link, useNavigate} from 'react-router-dom'; // react-router-dom
-import {useAuth} from '../../hooks/useAuth'; // Authen
-import {loginUser} from '../../services/userService'; // login service
+import {useDispatch, useSelector} from 'react-redux';
+import {login} from '../../hooks/authSlice.js';
 
-import {registerNewUser} from '../../services/userService'; // register service
+import {loginUser, registerNewUser} from '../../services/authService'; // auth service
 
 const Login = () => {
-  const {auth, loginContext} = useAuth();
-  // console.log(auth);
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth); // auth import
 
   // navigation
   const navigate = useNavigate(); // use this instead of history.push
@@ -44,7 +41,9 @@ const Login = () => {
     setIsSignInPasswordShow(!isSignInPasswordShow);
     signInPasswordSwitch();
   };
-    // handleLogin for button press
+
+
+  // handleLogin for button press
   const handleLogin = async () => {
     setLoginValidInput(defaultLoginValidInput);
     if (!ValueLogin) {
@@ -67,9 +66,9 @@ const Login = () => {
       const response = await loginUser(ValueLogin, PasswordLogin);
       if (response && +response.EC === 0) {
         // success
-        const rolesWithPermission = response.EC.rolesWithPermission;
-        const email = response.EC.email;
-        const username = response.EC.username;
+        const rolesWithPermission = response.DT.rolesWithPermission;
+        const email = response.DT.email;
+        const username = response.DT.username;
         const token = response.DT.access_token;
 
         const data = {
@@ -78,9 +77,9 @@ const Login = () => {
           account: {rolesWithPermission, email, username},
         };
 
-        localStorage.setItem('jwt', token);
+        // localStorage.setItem('jwt', token);
         // update context
-        loginContext(data);
+        dispatch(login(data));
 
         // success
         toast.success(response.EM);
@@ -104,10 +103,6 @@ const Login = () => {
     if (event.keyCode === 13 && event.code === 'Enter') {
       handleLogin();
     }
-  };
-
-  const handleCreateNewAccount = () => {
-    navigate('/users');
   };
 
   const defaultFocusRing = {
@@ -275,23 +270,6 @@ const Login = () => {
     return true;
   };
 
-  const validateUsername = async () => {
-    try {
-      const loginGmailCheck = /^[a-zA-Z0-9]+$/.test(ValueLogin);
-      // Check if the username is not empty and contains only alphanumeric characters
-      if (loginGmailCheck) {
-        // Sanitize the username (remove any potentially dangerous characters)
-        const sanitizedUsername = ValueLogin.replace(/[<>&"']/g, '');
-        return sanitizedUsername;
-      } else {
-        // If validation fails, return null or throw an error
-        return null;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
 
   // handleRegister for button press
   const handleRegister = async () => {
@@ -305,14 +283,32 @@ const Login = () => {
           firstname,
           lastname,
       );
-      const serverData = response;
-      // console.log(serverData);
+      const res = await loginUser(email, password);
+      if (res && +res.EC === 0) {
+        // success
+        const rolesWithPermission = res.DT.rolesWithPermission;
+        const email = res.DT.email;
+        const username = res.DT.username;
+        const token = res.DT.access_token;
+
+        const data = {
+          isAuthenticated: true,
+          token,
+          account: {rolesWithPermission, email, username},
+        };
+
+        // update context
+        dispatch(login(data));
+      }
       // dấu cộng convert string sang int
-      if (+serverData.EC === 0) {
-        toast.success(serverData.EM);
-        handleCreateNewAccount();
+      if (+response.EC === 0 && +res.EC === 0) {
+        // success
+        toast.success(response.EM);
+        toast.success(response.EC);
+        // navigate after setting auth
+        navigate('/');
       } else {
-        toast.error(serverData.EM);
+        toast.error(response.EM);
       }
     }
   };
@@ -337,32 +333,10 @@ const Login = () => {
     }
   }, [isActive]);
 
-  // useEffect(() => {
-  //   if (auth && auth.isAuthenticated) {
-  //     if (auth.account && auth.account.rolesWithPermission) {
-  //       const groupId = auth.account.rolesWithPermission.id;
-  //       if (groupId === 1 || groupId === 2) {
-  //         return navigate('/admin');
-  //       } else if (groupId === 3) {
-  //         return navigate('/users');
-  //       } else {
-  //         // Handle the case when auth.account.rolesWithPermission.id is neither 1, 3, nor 4
-  //         // For example, navigate to a default page or show an error message.
-  //         return navigate('/'); // Adjust the default route accordingly
-  //       }
-  //     } else {
-  //       // Handle the case when auth.account.rolesWithPermission is not available
-  //       // For example, navigate to a default page or show an error message.
-  //       return navigate('/'); // Adjust the default route accordingly
-  //     }
-  //   }
-  // }, []);
-
   // useEffect to handle navigation after loginContext is complete
   useEffect(() => {
     if (auth && auth.isAuthenticated) {
       navigate('/'); // Navigate here after loginContext is complete
-      console.log('navigate');
     }
   }, [auth, navigate]);
 

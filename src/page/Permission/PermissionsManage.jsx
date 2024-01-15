@@ -3,11 +3,32 @@ import React, {useState, useRef, useEffect} from 'react';
 import _ from 'lodash';
 import {v4 as uuidv4} from 'uuid';
 import {toast} from 'react-toastify';
-import {createRoles} from '../../services/rolesService';
-import TableRoles from './TableRoles';
+import TablePermissions from '../../components/Table/TablePermissions';
+import useInstance from '../../setup/instance';
 
-const RolesManage = (props) => {
+const PermissionsManage = (props) => {
   const childRef = useRef();
+  const {instance, controller} = useInstance();
+
+  const createRoles = async (permissions) => {
+    try {
+      return await instance.post(`/admin/permissions/create`, [...permissions]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      controller.abort();
+    }
+  };
+
+  // const fetchAllPermissions = async () => {
+  //   try {
+  //     return await instance.get(`/admin/permissions/read`);
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     controller.abort();
+  //   }
+  // };
 
   const dataChildDefault = {
     url: '',
@@ -43,10 +64,9 @@ const RolesManage = (props) => {
     let _listChilds = _.cloneDeep(listChilds);
     delete _listChilds[key];
     setListChilds(_listChilds);
-    // console.log(key);
   };
 
-  const buildDatatoPersist = () => {
+  const buildDataToPersist = () => {
     let _listChilds = _.cloneDeep(listChilds);
     let result = [];
     Object.entries(_listChilds).find(([key, child], index) => {
@@ -67,11 +87,11 @@ const RolesManage = (props) => {
 
     if (!invalidOBj) {
       // call api
-      let data = buildDatatoPersist();
+      let data = buildDataToPersist();
       let res = await createRoles(data);
-      if (res && res.EC === 0) {
-        toast.success(res.EM);
-        childRef.current.fetchListRolesAgain();
+      if (res && res.data && res.data.EC === 0) {
+        toast.success(res.data.EM);
+        childRef.current.fetchlistPermissionsAgain();
       }
     } else {
       // error
@@ -164,7 +184,7 @@ const RolesManage = (props) => {
           <hr className='mt-3'/>
           <div className="mt-3">
             <h4 className='font-semibold'>List Current Roles: </h4>
-            <TableRoles ref={childRef}/>
+            <TablePermissions ref={childRef}/>
           </div>
         </div>
       </div>
@@ -172,4 +192,4 @@ const RolesManage = (props) => {
   );
 };
 
-export default RolesManage;
+export default PermissionsManage;
