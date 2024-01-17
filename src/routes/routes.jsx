@@ -28,6 +28,9 @@ import RolePermission from '../page/Role/RolePermission.jsx';
 import AdminAnalytics from '../page/Analytics/AdminAnalytics.jsx';
 
 import Users from '../page/User/Users.jsx'; // User Dashboard
+import Calculator from '../page/Calculator/Calculator.jsx';
+import Exercises from '../page/Exercise/Exercises.jsx';
+import UserAnalytics from '../page/Analytics/UserAnalytics.jsx';
 
 
 const AppRoutes = () => {
@@ -49,6 +52,7 @@ const AppRoutes = () => {
             {/* public routes */}
             <Route path="/" element={<Home />} />
             <Route path="login" element={<Login />} />
+            <Route path='calculator' element={<Calculator />} />
             <Route path="about" element={<About />} />
             <Route path="faq" element={<FAQ />} />
             <Route path="exercises" element={<SearchExercises />} />
@@ -69,9 +73,11 @@ const AppRoutes = () => {
                 {auth.account.rolesWithPermission.id === 3 && (
                   <Route path='user' element={<UserLayout />}>
                     <Route path="dashboard" element={<Users />} />
+                    <Route path="analytics" element={<UserAnalytics />} />
                     <Route path="users-edit" element={<UsersEdit />} />
                   </Route>
                 )}
+                <Route path="exercises" element={< Exercises/>} />
               </Route>
             )}
           </Route>

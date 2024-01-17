@@ -20,16 +20,6 @@ const PermissionsManage = (props) => {
     }
   };
 
-  // const fetchAllPermissions = async () => {
-  //   try {
-  //     return await instance.get(`/admin/permissions/read`);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     controller.abort();
-  //   }
-  // };
-
   const dataChildDefault = {
     url: '',
     description: '',

@@ -12,11 +12,19 @@ module.exports = {
       fontFamily: {
         montserrat: ['Montserrat', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
       },
       colors: {
         primary: '#3490dc',
         secondary: '#ffed4a',
         // add more custom colors as needed
+      },
+      fontWeight: {
+        'thin': 100,
+        'light': 300,
+        'normal': 400,
+        'semibold': 600,
+        'extrabold': 800,
       },
     },
   },

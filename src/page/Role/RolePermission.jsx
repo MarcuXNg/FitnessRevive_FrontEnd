@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {toast} from 'react-toastify';
 
 const RolePermission = () => {
-  const [userGroups, setUserGroups] = useState([]);
+  const [userRoles, setuserRoles] = useState([]);
   const [listRoles, setListRoles] = useState([]);
   const [selectRole, setselectRole] = useState('');
 
@@ -25,7 +25,7 @@ const RolePermission = () => {
 
   const fetchAllPermissions = async () => {
     try {
-      return await instance.get(`/admin/roles/read`);
+      return await instance.get(`/admin/permissions/read`);
     } catch (error) {
       console.log(error);
     } finally {
@@ -55,9 +55,9 @@ const RolePermission = () => {
 
   const getRoles = async () => {
     let res = await fetchRole();
-    // console.log(res);
+
     if (res && res.data && +res.data.EC === 0) {
-      setUserGroups(res.data.DT);
+      setuserRoles(res.data.DT);
     } else {
       toast.error(res.data.EM);
     }
@@ -73,6 +73,7 @@ const RolePermission = () => {
 
   const buildDataPermissionsByRole = async (rolesPermissions, allPermissions) => {
     let result = [];
+
     if (allPermissions && allPermissions.length > 0) {
       allPermissions.map((permission) => {
         let object = {};
@@ -94,6 +95,7 @@ const RolePermission = () => {
     setselectRole(value);
     if (value) {
       let res = await fetchPermissionByRole(value);
+      console.log(res);
       if (res && res.data && res.data.EC === 0) {
         let result = await buildDataPermissionsByRole(res.data.DT.RolePermissions, listRoles);
         setAssignPermissionsByRole(result);
@@ -137,22 +139,22 @@ const RolePermission = () => {
     getAllPermissions();
   }, []);
   return (
-    <div className='group-role-container'>
+    <div className='role-permission-container'>
       <div className="container">
         <h4 className='text-[25px] font-poppins'>Roles permission:</h4>
 
       </div>
-      <div className='assign-group-role'>
+      <div className='assign-permission-role'>
         <div>
           <label
-            htmlFor="group"
+            htmlFor="role"
             className="block text-sm font-medium text-gray-600 font-poppins"
           >
                         Select Roles (<span className="text-red-500">*</span>):
           </label>
           <select
-            id="group"
-            name="group"
+            id="role"
+            name="role"
             className="p-[10px] pr-[50px] rounded-[10px] focus:outline-none focus:ring-2 focus:border-blue-300 block sm:text-sm font-poppins font-medium"
             onChange={(event) => handleOnChangeGroup(event.target.value)}
             // value={userGroups.group}
@@ -160,8 +162,8 @@ const RolePermission = () => {
             <option value="">
             Please select the role you want to edit
             </option>
-            {userGroups.length > 0 &&
-                                userGroups.map((item, index) => {
+            {userRoles.length > 0 &&
+                                userRoles.map((item, index) => {
                                   return (
                                     // console.log(item)
                                     <option

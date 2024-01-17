@@ -35,9 +35,17 @@ const NavHeader = (props) => {
 
   // navigation
   const navigate = useNavigate();
-  const bmi = () => {
-    navigate('/bmi');
+  const calculator = () => {
+    navigate('/calculator');
   };
+  // const calories = () => {
+  //   navigate('/calories');
+  // };
+
+  const exercises = () => {
+    navigate('/exercises');
+  };
+
   const login = () => {
     navigate('/login');
   };
@@ -208,23 +216,25 @@ const NavHeader = (props) => {
                       }}
                     >
                       <MenuItem
-                        onClick={bmi}
+                        onClick={calculator}
                         style={{
                           // Use inline styles
                           fontFamily: 'Poppins, sans-serif',
                         }}
                       >
-                          BMI / BMR
+                          Calculator
                       </MenuItem>
-                      <MenuItem
+                      {/* <MenuItem
+                        onClick={calories}
                         style={{
                           // Use inline styles
                           fontFamily: 'Poppins, sans-serif',
                         }}
                       >
                           Calories
-                      </MenuItem>
+                      </MenuItem> */}
                       <MenuItem
+                        onClick={exercises}
                         style={{
                           // Use inline styles
                           fontFamily: 'Poppins, sans-serif',
