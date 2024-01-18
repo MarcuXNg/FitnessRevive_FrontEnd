@@ -42,8 +42,8 @@ const NavHeader = (props) => {
   //   navigate('/calories');
   // };
 
-  const exercises = () => {
-    navigate('/exercises');
+  const exercise = () => {
+    navigate('/exercise');
   };
 
   const login = () => {
@@ -234,7 +234,7 @@ const NavHeader = (props) => {
                           Calories
                       </MenuItem> */}
                       <MenuItem
-                        onClick={exercises}
+                        onClick={exercise}
                         style={{
                           // Use inline styles
                           fontFamily: 'Poppins, sans-serif',

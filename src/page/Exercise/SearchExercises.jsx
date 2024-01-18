@@ -3,7 +3,7 @@ import {Box, Button, Stack, TextField, Typography} from '@mui/material';
 import PropTypes from 'prop-types';
 
 import {searchExercises, bodyPartList} from '../../services/exerciseService';
-import HorizontalScrollbar from './HorizontalScrollbar.jsx';
+import HorizontalScrollBar from './HorizontalScrollBar.jsx';
 
 const SearchExercises = ({setExercises, bodyPart, setBodyPart}) => {
   const [search, setSearch] = useState('');
@@ -33,8 +33,8 @@ const SearchExercises = ({setExercises, bodyPart, setBodyPart}) => {
 
       window.scrollTo({top: 1800, left: 100, behavior: 'smooth'});
       setSearch('');
-      console.log(searchedExercises);
-      // setExercises(searchedExercises);
+      // console.log(searchedExercises);
+      setExercises(searchedExercises);
     }
   };
 
@@ -52,12 +52,12 @@ const SearchExercises = ({setExercises, bodyPart, setBodyPart}) => {
           placeholder="Search Exercises"
           type="text"
         />
-        <Button className="search-btn" sx={{bgcolor: '#FF2625', color: '#fff', textTransform: 'none', width: {lg: '173px', xs: '80px'}, height: '56px', position: 'absolute', right: '0px', fontSize: {lg: '20px', xs: '14px'}}} onClick={handleSearch}>
+        <Button className="search-btn hover:bg-[#FF2625] hover:border-[1px] hover:border-solid hover:border-[#FF2625]" sx={{bgcolor: '#FF2625', color: '#fff', textTransform: 'none', width: {lg: '173px', xs: '80px'}, height: '56px', position: 'absolute', right: '0px', fontSize: {lg: '20px', xs: '14px'}}} onClick={handleSearch}>
           Search
         </Button>
       </Box>
-      <Box sx={{position: 'relative', width: '100%', p: '20px'}}>
-        <HorizontalScrollbar data={bodyParts} bodyParts setBodyPart={setBodyPart} bodyPart={bodyPart} />
+      <Box sx={{position: 'relative', width: '75%', p: '20px'}}>
+        <HorizontalScrollBar data={bodyParts} bodyParts setBodyPart={setBodyPart} bodyPart={bodyPart} />
       </Box>
     </Stack>
   );

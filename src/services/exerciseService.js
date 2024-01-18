@@ -1,24 +1,5 @@
 import axios from '../setup/exerciseAxios';
 
-// // Define the request options
-// const options = {
-//     method: 'GET',
-//     url: '/exercises/bodyPart/back',
-//     params: {limit: '10'},
-//   };
-
-//   // Make the request using the Axios instance
-//   instance
-//       .request(options)
-//       .then((data) => {
-//       // Handle successful response
-//         console.log(data);
-//       })
-//       .catch((error) => {
-//       // Handle error
-//         console.error(error);
-//       });
-
 // searchExercises
 const bodyPartList = async () => {
   try {
@@ -36,7 +17,45 @@ const searchExercises = async () => {
   }
 };
 
+const getBodyPart = async (bodyPart) => {
+  try {
+    const data = bodyPart.replace(/"/g, '');
+    return await axios.get(`/exercises/bodyPart/${data}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const fetchExerciseDetailData = async (id) => {
+  try {
+    return await axios.get(`/exercises/exercise/${id}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const fetchEquimentExercisesData = async (equipment) => {
+  try {
+    return await axios.get(`/exercises/equipment/${equipment}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const fetchTargetMuscleExercisesData = async (target) => {
+  try {
+    return await axios.get(`/exercises/target/${target}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 export {
   searchExercises,
   bodyPartList,
+  getBodyPart,
+  fetchExerciseDetailData,
+  fetchEquimentExercisesData,
+  fetchTargetMuscleExercisesData,
 };

@@ -12,20 +12,37 @@ const Calculator = () => {
   const [gender, setGender] = useState('male');
   const [activityLevel, setActivityLevel] = useState('sedentary');
   const [show, setShow] = useState(false);
-  const [waterIntake, setWaterIntake] = useState(0);
-  const [energy, setEnergy] = useState('');
+  const [waterIntake, setWaterIntake] = useState();
+  const [energy, setEnergy] = useState();
   const [bmi, setBMI] = useState('');
   const [bmr, setBMR] = useState('');
   const [age, setAge] = useState('');
   const [displaySave, setDisplaySave] = useState(false);
   const [analysis, setAnalysis] = useState('');
   const [tdee, setTdee] = useState('');
+  const [glassOfWater, setGlassOfWater] = useState(0);
   const auth = useSelector((state) => state.auth);
 
-  const saveData = async (bmi, bmr, tdee, waterIntake, activityLevel, height, weight) => {
+  const saveData = async (
+      bmi,
+      bmr,
+      tdee,
+      waterIntake,
+      activityLevel,
+      height,
+      weight,
+  ) => {
     try {
       if (auth.isAuthenticated === true) {
-        const res = await instance.post(`/users/bmi-bmr/save`, {bmi, bmr, tdee, waterIntake, activityLevel, height, weight});
+        const res = await instance.post(`/users/bmi-bmr/save`, {
+          bmi,
+          bmr,
+          tdee,
+          waterIntake,
+          activityLevel,
+          height,
+          weight,
+        });
         if (res && res.data && res.data.EC === 0) {
           toast.success(res.data.EM);
         } else {
@@ -107,8 +124,9 @@ const Calculator = () => {
         setBMR(calculatedBMR.toFixed(2));
         setTdee(tdee.toFixed(2));
 
-        const waterIntake = Math.round((weight * 0.03) * 100) / 100;
+        const waterIntake = Math.round(weight * 0.03 * 100) / 100;
         setWaterIntake(waterIntake.toFixed(0));
+        calculateGlassOfWater(waterIntake);
       }
       if (gender === 'female') {
         const calculatedBMR =
@@ -140,8 +158,9 @@ const Calculator = () => {
         setBMR(calculatedBMR.toFixed(2));
         setTdee(tdee.toFixed(2));
 
-        const waterIntake = Math.round((weight * 0.03) * 100) / 100;
+        const waterIntake = Math.round(weight * 0.03 * 100) / 100;
         setWaterIntake(waterIntake.toFixed(0));
+        calculateGlassOfWater(waterIntake);
       }
     } else {
       toast.error('Please fill in all input');
@@ -199,7 +218,7 @@ const Calculator = () => {
 
     const res = calo * factor;
 
-    setEnergy(res);
+    setEnergy(res.toFixed(2));
     saveGoal(res);
     // toast.success(`Energy needed is: ${res} calories/day`);
   };
@@ -208,6 +227,11 @@ const Calculator = () => {
   };
   const handleClose = () => {
     setShow(false);
+  };
+
+  const calculateGlassOfWater = (water) => {
+    const res = water * 1000 / 240;
+    setGlassOfWater(res.toFixed(0));
   };
 
   return (
@@ -233,10 +257,12 @@ const Calculator = () => {
               Your BMI / BMR
             </h3>
             <p className="text-justify mb-4">
-              <span className="font-bold font-poppins text-[20px]">Body mass index</span> is
-              a value derived from the mass and height of a person. The BMI is
-              defined as the body mass divided by the square of the body height,
-              and is expressed in units of kg/m², resulting from mass in
+              <span className="font-bold font-poppins text-[20px]">
+                Body mass index
+              </span>{' '}
+              is a value derived from the mass and height of a person. The BMI
+              is defined as the body mass divided by the square of the body
+              height, and is expressed in units of kg/m², resulting from mass in
               kilograms and height in metres.
             </p>
             <p className="text-justify mb-4">
@@ -249,7 +275,7 @@ const Calculator = () => {
               the number of calories your body needs to perform basic
               physiological functions while at complete rest.
             </p>
-            <div className='mt-10'>
+            <div className="mt-10">
               <div className="grid grid-rows-1 grid-cols-2">
                 <div className="mb-2 flex justify-center font-poppins">
                   <input
@@ -295,16 +321,27 @@ const Calculator = () => {
               <div className="mb-3 flex justify-center font-poppins">
                 <select
                   id="activityLevel"
-                  name='activityLevel'
+                  name="activityLevel"
                   value={activityLevel}
                   className="px-3 py-3 border-black border-[2px] rounded-[4px]"
                   onChange={(e) => setActivityLevel(e.target.value)}
                 >
-                  <option value="sedentary">Sedentary (little or no exercise)</option>
-                  <option value="lightlyActive">Lightly Active (light exercise/sports 1-3 days/week)</option>
-                  <option value="moderatelyActive">Moderately Active (moderate exercise/sports 3-5 days/week)</option>
-                  <option value="veryActive">Very Active (hard exercise/sports 6-7 days a week)</option>
-                  <option value="extraActive">Extra Active (very hard exercise/sports & physical job or 2x training)</option>
+                  <option value="sedentary">
+                    Sedentary (little or no exercise)
+                  </option>
+                  <option value="lightlyActive">
+                    Lightly Active (light exercise/sports 1-3 days/week)
+                  </option>
+                  <option value="moderatelyActive">
+                    Moderately Active (moderate exercise/sports 3-5 days/week)
+                  </option>
+                  <option value="veryActive">
+                    Very Active (hard exercise/sports 6-7 days a week)
+                  </option>
+                  <option value="extraActive">
+                    Extra Active (very hard exercise/sports & physical job or 2x
+                    training)
+                  </option>
                 </select>
               </div>
             </div>
@@ -352,20 +389,20 @@ const Calculator = () => {
               </div>
               {displaySave && (
                 <div className="items-center justify-center grid">
-                  <div>
+                  <div className="items-center flex justify-center">
                     <button
                       className="flex justify-center items-center gap-[10px] bg-[#1B2129] text-white border-none cursor-pointer text-[16px] rounded-[4px] pt-[15px] pr-[40px] pb-[15px] pl-[40px] mt-4 font-poppins"
                       onClick={dataSave}
                     >
-                    Save
+                      Save
                     </button>
                   </div>
-                  <div>
+                  <div className="items-center flex justify-center">
                     <button
                       className="flex justify-center items-center gap-[10px] bg-[#1B2129] text-white border-none cursor-pointer text-[16px] rounded-[4px] pt-[15px] pr-[40px] pb-[15px] pl-[40px] mt-4 font-poppins"
                       onClick={togglePopup}
                     >
-                    Set your goal
+                      Set your goal
                     </button>
                     <CaloriesPopUp
                       show={show}
@@ -378,7 +415,7 @@ const Calculator = () => {
               )}
             </div>
           </div>
-          <div>
+          <div className="mt-[100px]">
             <h3 className="text-[#1C2129] font-inter text-[45px] font-[700] leading-[22px] mt-5 mb-5">
               Chart
             </h3>
@@ -430,26 +467,99 @@ const Calculator = () => {
                 </tr>
               </tbody>
             </table>
-            <div className="mt-10">
-              <h3 className="text-[#1C2129] font-inter text-[45px] font-[700] leading-[22px] mt-[60px] mb-5">
-                Your TDEE
-              </h3>
-              <p className="text-justify mb-4">
-                <span className="font-bold font-poppins text-[20px]">TDEE</span> stands for{' '}
-                <span className="font-bold font-poppins">
-                  Total Daily Energy Expenditure
-                </span>
-                . It represents the total number of calories that an individual
-                burns in a day, taking into account all activities, including
-                basal metabolic rate (BMR), physical activity, and the thermic
-                effect of food. The TDEE is a crucial factor in determining an
-                individual&apos;s caloric needs, especially for those who are
-                interested in managing their weight. To calculate TDEE, you
-                typically start with the BMR, which represents the number of
-                calories your body needs at rest to maintain basic physiological
-                functions. Then, you factor in the calories burned through daily
-                activities and exercise.
-              </p>
+          </div>
+        </div>
+        <div className="mt-10">
+          <h3 className="text-[#1C2129] font-inter text-[45px] font-[700] leading-[22px] mt-[60px] mb-5">
+            Your TDEE
+          </h3>
+          <p className="text-justify mb-4">
+            <span className="font-bold font-poppins text-[20px]">TDEE</span>{' '}
+            stands for{' '}
+            <span className="font-bold font-poppins">
+              Total Daily Energy Expenditure
+            </span>
+            . It represents the total number of calories that an individual
+            burns in a day, taking into account all activities, including basal
+            metabolic rate (BMR), physical activity, and the thermic effect of
+            food. The TDEE is a crucial factor in determining an
+            individual&apos;s caloric needs, especially for those who are
+            interested in managing their weight. To calculate TDEE, you
+            typically start with the BMR, which represents the number of
+            calories your body needs at rest to maintain basic physiological
+            functions. Then, you factor in the calories burned through daily
+            activities and exercise.
+          </p>
+
+          <div>
+            <div className="mt-2">
+              {tdee && (
+                <h3 className="text-[20px] font-poppins">
+                  Your TDEE is:{' '}
+                  <span className="font-bold text-red-500">{tdee}</span>
+                </h3>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="mt-10">
+          <h3 className="text-[#1C2129] font-inter text-[45px] font-[700] leading-[22px] mt-[60px] mb-5">
+            The Amount of water you should take perday
+          </h3>
+          <p className="text-justify mb-4">
+            It is important to drink water regularly, even when not feeling
+            thirsty, and to divide it into multiple times throughout the day.
+            The total amount of water the body needs to consume is approximately
+            2-2.5 liters per day, but it&apos;s recommended to divide this into 8-10
+            cups of water. Distributing the additional water intake evenly
+            throughout the day ensures a balance for the body&apos;s functioning.
+          </p>
+
+          <div>
+            <div className="mt-2">
+              {waterIntake && (
+                <div>
+                  <h3 className="text-[20px] font-poppins">
+                  Your Water Intake is:{' '}
+                    <span className="font-bold text-red-500">{waterIntake}</span>
+                  </h3>
+                  <h3 className="text-[18px] font-poppins">
+                      Which means is:{' '}
+                    <span className="font-bold text-red-500">{glassOfWater}</span>
+                    (240ml / per glass)
+                  </h3>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="mt-10">
+          <h3 className="text-[#1C2129] font-inter text-[45px] font-[700] leading-[22px] mt-[60px] mb-5">
+            Calories perday
+          </h3>
+          <p className="text-justify mb-4">
+          the estimated amount of energy or calories that an individual requires in a day to maintain their current weight, taking into account factors such as basal metabolic rate (BMR), physical activity, and other daily activities.
+          </p>
+          <p className="text-justify mb-4">
+          1.  <span className="font-bold">Energy Needed</span>: This represents the total energy or calories that the body needs to perform various functions, including maintaining bodily functions at rest (BMR), engaging in daily activities, and, if applicable, participating in physical exercise.
+          </p>
+          <p className="text-justify mb-4">
+          2.  <span className="font-bold">Calories/day</span>: This specifies that the energy requirement is expressed in calories per day. The term &apos;calories&apos; in this context refers to kilocalories (kcal), which are commonly used to measure the energy content of food and the energy expended by the body.
+          </p>
+          <p className="text-justify mb-4">
+          The actual calculation of daily energy needs can be influenced by factors such as age, gender, weight, height, activity level, and overall health goals (e.g., weight maintenance, weight loss, or weight gain). It&apos;s a crucial consideration in nutrition planning to ensure that individuals meet their energy requirements for optimal health and well-being.
+          </p>
+          <div>
+            <div className="mt-2">
+              {energy && (
+                <div>
+                  <h3 className="text-[20px] font-poppins">
+                  Energy needed is: :{' '}
+                    <span className="font-bold text-red-500">{energy}</span>
+                    calories/day
+                  </h3>
+                </div>
+              )}
             </div>
           </div>
         </div>

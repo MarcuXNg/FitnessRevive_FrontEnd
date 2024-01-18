@@ -31,6 +31,8 @@ import Users from '../page/User/Users.jsx'; // User Dashboard
 import Calculator from '../page/Calculator/Calculator.jsx';
 import Exercises from '../page/Exercise/Exercises.jsx';
 import UserAnalytics from '../page/Analytics/UserAnalytics.jsx';
+import Meal from '../page/Meal/meal.jsx';
+import ExerciseDetail from '../page/Exercise/ExerciseDetail.jsx';
 
 
 const AppRoutes = () => {
@@ -55,7 +57,6 @@ const AppRoutes = () => {
             <Route path='calculator' element={<Calculator />} />
             <Route path="about" element={<About />} />
             <Route path="faq" element={<FAQ />} />
-            <Route path="exercises" element={<SearchExercises />} />
 
             {/* authenticated routes */}
             {auth && auth.account && auth.account.rolesWithPermission && (
@@ -75,9 +76,11 @@ const AppRoutes = () => {
                     <Route path="dashboard" element={<Users />} />
                     <Route path="analytics" element={<UserAnalytics />} />
                     <Route path="users-edit" element={<UsersEdit />} />
+                    <Route path="meal" element={<Meal />} />
                   </Route>
                 )}
-                <Route path="exercises" element={< Exercises/>} />
+                <Route path="exercise" element={< Exercises/>} />
+                <Route path="exercise/:id" element={<ExerciseDetail />} />
               </Route>
             )}
           </Route>

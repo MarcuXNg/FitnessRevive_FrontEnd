@@ -27,13 +27,13 @@ const UserSideBar = () => {
               </span>
               <h3 className='font-[500] text-[0.87rem] font-poppins'>Dashboard</h3>
             </Link>
-            <Link className={`flex items-center relative no-underline ${isActive('/user/users') ? 'active' : ''}`} to="/user/users">
+            <Link className={`flex items-center relative no-underline ${isActive('/user/meal') ? 'active' : ''}`} to="/user/meal">
               <span className="material-symbols-outlined">
                         person_outline
               </span>
-              <h3 className='font-[500] text-[0.87rem] font-poppins'>User</h3>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Your meal</h3>
             </Link>
-            <Link className={`flex items-center relative no-underline ${isActive('/user/roles') ? 'active' : ''}`} to="/user/roles">
+            <Link className={`flex items-center relative no-underline ${isActive('/user') ? 'active' : ''}`} to="/user">
               <span className="material-symbols-outlined">
                     settings_accessibility
               </span>
@@ -43,7 +43,7 @@ const UserSideBar = () => {
               <span className="material-symbols-outlined">
                     groups
               </span>
-              <h3 className='font-[500] text-[0.87rem] font-poppins'>Group Roles</h3>
+              <h3 className='font-[500] text-[0.87rem] font-poppins'>Roles</h3>
             </Link>
             <Link className={`flex items-center relative no-underline ${isActive('/user/analytics') ? 'active' : ''}`} to="/user/analytics">
               <span className="material-icons-sharp">

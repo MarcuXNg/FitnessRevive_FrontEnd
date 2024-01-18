@@ -11,6 +11,7 @@ import 'react-loader-spinner'; // import react-loader-spinner library
 import reportWebVitals from './reportWebVitals.js'; // import reportWebVitals
 import './styles/index/index.scss'; // import index.scss
 import 'font-awesome/css/font-awesome.min.css'; // import font-awesome
+import 'react-horizontal-scrolling-menu/dist/styles.css';
 
 const rootElement = document.getElementById('root'); // get the element with the id root, usually a div
 
