@@ -31,7 +31,8 @@ const User = () => {
         setGoal(res.data.DT);
         // toast.success(res.data.EM);
       } else {
-        toast.error(res.data.EM);
+        // toast.error(res.data.EM);
+        console.log(res.data.EM);
       }
     } catch (error) {
       console.log(error);
@@ -47,7 +48,8 @@ const User = () => {
         setBurned(res.data.DT.calories_burnt_per_day);
         // console.log(res.data.DT);
       } else {
-        toast.error(res.data.EM);
+        // toast.error(res.data.EM);
+        console.log(res.data.EM);
       }
     } catch (error) {
       console.log(error);
@@ -64,7 +66,8 @@ const User = () => {
         setMeals(res.data.DT);
         // toast.success(res.data.EM);
       } else {
-        toast.error(res.data.EM);
+        // toast.error(res.data.EM);
+        console.log(res.data.EM);
       }
     } catch (error) {
       console.log(error);
@@ -81,7 +84,8 @@ const User = () => {
         setExercise(res.data.DT);
         // toast.success(res.data.EM);
       } else {
-        toast.error(res.data.EM);
+        // toast.error(res.data.EM);
+        console.log(res.data.EM);
       }
     } catch (error) {
       console.log(error);
