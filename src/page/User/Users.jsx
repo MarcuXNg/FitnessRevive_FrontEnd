@@ -120,7 +120,10 @@ const User = () => {
   };
 
   const calculatePercent = async () => {
-    const res = (burned / goal) * 100;
+    const res = (eaten / goal) * 100;
+    if (res.toFixed(0) > 100) {
+      setPercent(100);
+    }
     setPercent(res.toFixed(0));
   };
 
@@ -164,7 +167,7 @@ const User = () => {
           </div>
         </div>
         <div>
-          <CaloriesChart percent={percent} calories={(goal - burned + eaten).toFixed(0)}/>
+          <CaloriesChart percent={percent} calories={(goal + burned - eaten).toFixed(0)}/>
         </div>
         <div className='flex items-center justify-center'>
           <div>

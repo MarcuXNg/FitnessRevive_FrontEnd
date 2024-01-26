@@ -23,7 +23,6 @@ import PermissionsManage from '../page/Permission/PermissionsManage.jsx'; // Per
 import Admin from '../page/Admin/Admin.jsx'; // Admin
 
 import UsersManage from '../page/Admin/UsersManage.jsx'; // UserManage
-import SearchExercises from '../page/Exercise/SearchExercises.jsx';
 import RolePermission from '../page/Role/RolePermission.jsx';
 import AdminAnalytics from '../page/Analytics/AdminAnalytics.jsx';
 
