@@ -387,6 +387,7 @@ const ModalUser = ({
       if (res && res.data && res.data.EC === 0) {
         handleUserCreateClose();
         setUserData({...defaultUserData, role: userRoles && userRoles.length > 0 ? userRoles[0].id : ''});
+        toast.success(res.data.EM);
       }
       if (res && res.data && res.data.EC !== 0) {
         toast.error(res.data.EM);

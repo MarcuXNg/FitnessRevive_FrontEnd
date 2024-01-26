@@ -98,3 +98,8 @@ body {
       width: 280px;
     }
   }
+
+  .react-calendar__tile--active {
+    background-color: #3498db; /* Customize the background color */
+    color: #fff; /* Customize the text color */
+  }

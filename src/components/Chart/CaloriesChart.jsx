@@ -15,7 +15,7 @@ const CaloriesChart = ({percent, calories}) => {
         },
       },
     },
-    labels: [`${calories}`],
+    labels: [`${calories} remaining`],
   };
 
   const series = [percent];

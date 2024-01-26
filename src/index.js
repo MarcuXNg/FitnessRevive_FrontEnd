@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'; // BrowserRouter:
 import '@fortawesome/fontawesome-free/css/all.min.css'; // import fontawesome
 import {Provider} from 'react-redux'; // redux
 import store from './redux/store.js'; // redux store import
+import 'react-calendar/dist/Calendar.css';
 
 import App from './routes/App.jsx'; // import App.jsx
 import {AuthProvider} from './context/AuthProvider.jsx'; // import AuthProvider

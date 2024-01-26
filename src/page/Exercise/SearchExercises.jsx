@@ -9,13 +9,13 @@ const SearchExercises = ({setExercises, bodyPart, setBodyPart}) => {
   const [search, setSearch] = useState('');
   const [bodyParts, setBodyParts] = useState([]);
 
+  const fetchExercisesData = async () => {
+    const bodyPartsData = await bodyPartList();
+
+    setBodyParts(['all', ...bodyPartsData]);
+  };
+
   useEffect(() => {
-    const fetchExercisesData = async () => {
-      const bodyPartsData = await bodyPartList();
-
-      setBodyParts(['all', ...bodyPartsData]);
-    };
-
     fetchExercisesData();
   }, []);
 
@@ -30,10 +30,10 @@ const SearchExercises = ({setExercises, bodyPart, setBodyPart}) => {
                item.equipment.toLowerCase().includes(search) ||
                item.bodyPart.toLowerCase().includes(search),
       );
-
+      // console.log(searchedExercises);
       window.scrollTo({top: 1800, left: 100, behavior: 'smooth'});
       setSearch('');
-      // console.log(searchedExercises);
+
       setExercises(searchedExercises);
     }
   };

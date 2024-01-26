@@ -1,9 +1,28 @@
 import React from 'react';
 import {HelmetProvider, Helmet} from 'react-helmet-async';
-import {useLocation, Link} from 'react-router-dom';
+import {useLocation, Link, useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {logout} from '../../hooks/authSlice';
+import {toast} from 'react-toastify';
+// logout service
+import {logoutUser} from '../../services/authService';
 
 const Sidebar = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    const data = await logoutUser(); // clear cookies
+
+    dispatch(logout()); // clear user data in context
+
+    if (data && +data.EC === 0) {
+      toast.success('Goodbye');
+      navigate('/login');
+    } else {
+      toast.error(data.EM);
+    }
+  };
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -70,7 +89,7 @@ const Sidebar = () => {
               </span>
               <h3 className='font-[500] text-[0.87rem] font-poppins'>Settings</h3>
             </Link>
-            <Link className="flex items-center no-underline" to="#">
+            <Link className="flex items-center no-underline" onClick={handleLogout}>
               <span className="material-icons-sharp">
                     logout
               </span>

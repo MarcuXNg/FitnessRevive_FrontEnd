@@ -554,8 +554,8 @@ const Calculator = () => {
               {energy && (
                 <div>
                   <h3 className="text-[20px] font-poppins">
-                  Energy needed is: :{' '}
-                    <span className="font-bold text-red-500">{energy}</span>
+                  Energy needed is: {' '}
+                    <span className="font-bold text-red-500">{energy}</span> {' '}
                     calories/day
                   </h3>
                 </div>

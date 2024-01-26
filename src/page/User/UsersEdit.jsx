@@ -3,7 +3,7 @@ import React from 'react';
 
 const UsersEdit = () => {
   return (
-    <div className="container mx-auto mt-[100px] mb-[40px] px-[80px]">
+    <div className="container mx-auto mb-[40px] px-[80px]">
       <form>
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">

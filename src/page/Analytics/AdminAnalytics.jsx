@@ -153,7 +153,7 @@ const AdminAnalytics = () => {
                 <h1 className='text-[1.8rem] font-[800]'>1,000</h1>
               </div>
               <div className="progress">
-                <CircleProgressBar percent={progress} color='text-[#FF0060]'/>
+                <CircleProgressBar percent={50} color='text-[#FF0060]'/>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ const AdminAnalytics = () => {
                 <h1 className='text-[1.8rem] font-[800]'>14,000</h1>
               </div>
               <div className="progress">
-                <CircleProgressBar percent={progress} color='text-[#F7D060]'/>
+                <CircleProgressBar percent={70} color='text-[#F7D060]'/>
               </div>
             </div>
           </div>

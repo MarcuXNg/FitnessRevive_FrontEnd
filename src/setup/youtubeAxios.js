@@ -1,7 +1,7 @@
 import axios from 'axios';
 // import {toast} from 'react-toastify';
 
-const rapidAPIKey = process.env.REACT_APP_exerciseAPIKey;
+const rapidAPIKey = process.env.REACT_APP_youtubeAPIKey;
 
 // Create an Axios instance with default configuration
 const instance = axios.create({

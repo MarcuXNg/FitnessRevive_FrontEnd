@@ -23,6 +23,8 @@ const CircleProgressBar = ({percent, color}) => {
           style={{
             strokeDasharray: circumference,
             strokeDashoffset: dashoffset,
+            transform: 'rotate(-90deg)', // Rotate the circle to start from the top
+            transformOrigin: '50% 50%',
           }}
         />
       </svg>

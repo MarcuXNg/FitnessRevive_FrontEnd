@@ -75,7 +75,7 @@ const AppRoutes = () => {
                   <Route path='user' element={<UserLayout />}>
                     <Route path="dashboard" element={<Users />} />
                     <Route path="analytics" element={<UserAnalytics />} />
-                    <Route path="users-edit" element={<UsersEdit />} />
+                    <Route path="edit" element={<UsersEdit />} />
                     <Route path="meal" element={<Meal />} />
                   </Route>
                 )}

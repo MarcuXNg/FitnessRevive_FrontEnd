@@ -9,7 +9,6 @@ import ExerciseCard from './ExerciseCard';
 import BodyPart from './BodyPart';
 
 const HorizontalScrollbar = ({data, bodyParts, setBodyPart, bodyPart}) => {
-  // console.log('data', data);
   return (
     <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow}>
       {data.map((item) => (

@@ -11,7 +11,7 @@ const bodyPartList = async () => {
 
 const searchExercises = async () => {
   try {
-    return await axios.get('/exercises');
+    return await axios.get('/exercises?limit=9999');
   } catch (error) {
     console.log(error);
   }
@@ -19,7 +19,7 @@ const searchExercises = async () => {
 
 const getBodyPart = async (bodyPart) => {
   try {
-    const data = bodyPart.replace(/"/g, '');
+    const data = bodyPart;
     return await axios.get(`/exercises/bodyPart/${data}`);
   } catch (error) {
     console.log(error);

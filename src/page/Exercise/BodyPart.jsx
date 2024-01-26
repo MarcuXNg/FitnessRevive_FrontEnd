@@ -3,7 +3,7 @@ import {Stack, Typography} from '@mui/material';
 import PropTypes from 'prop-types';
 
 const BodyPart = ({item, setBodyPart, bodyPart}) => {
-  console.log(item);
+  // console.log(item);
   return (
     <Stack
       type="button"
