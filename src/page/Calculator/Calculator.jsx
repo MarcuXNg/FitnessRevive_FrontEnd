@@ -22,6 +22,13 @@ const Calculator = () => {
   const [tdee, setTdee] = useState('');
   const [glassOfWater, setGlassOfWater] = useState(0);
   const auth = useSelector((state) => state.auth);
+  const date = new Date();
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const saveData = async (
       bmi,
@@ -31,10 +38,11 @@ const Calculator = () => {
       activityLevel,
       height,
       weight,
+      date,
   ) => {
     try {
       if (auth.isAuthenticated === true) {
-        const res = await instance.post(`/users/bmi-bmr/save`, {
+        const res = await instance.post(`/users/bmi-bmr/save/${date}`, {
           bmi,
           bmr,
           tdee,
@@ -58,10 +66,10 @@ const Calculator = () => {
     }
   };
 
-  const saveGoal = async (goal) => {
+  const saveGoal = async (goal, weight) => {
     try {
       if (auth.isAuthenticated === true) {
-        const res = await instance.post(`/users/goal/save`, {goal});
+        const res = await instance.post(`/users/goal/save`, {goal, weight});
         if (res && res.data && res.data.EC === 0) {
           toast.success(res.data.EM);
         } else {
@@ -78,7 +86,7 @@ const Calculator = () => {
   };
 
   const dataSave = () => {
-    saveData(bmi, bmr, tdee, waterIntake, activityLevel, height, weight);
+    saveData(bmi, bmr, tdee, waterIntake, activityLevel, height, weight, formatDate(date));
   };
 
   const calculateBMI = () => {
@@ -125,7 +133,7 @@ const Calculator = () => {
         setTdee(tdee.toFixed(2));
 
         const waterIntake = Math.round(weight * 0.03 * 100) / 100;
-        setWaterIntake(waterIntake.toFixed(0));
+        setWaterIntake(waterIntake.toFixed(2));
         calculateGlassOfWater(waterIntake);
       }
       if (gender === 'female') {
@@ -159,7 +167,7 @@ const Calculator = () => {
         setTdee(tdee.toFixed(2));
 
         const waterIntake = Math.round(weight * 0.03 * 100) / 100;
-        setWaterIntake(waterIntake.toFixed(0));
+        setWaterIntake(waterIntake.toFixed(2));
         calculateGlassOfWater(waterIntake);
       }
     } else {
@@ -213,13 +221,13 @@ const Calculator = () => {
     }
   };
 
-  const adjustCalories = (calo, factor) => {
+  const adjustCalories = (calo, factor, weight) => {
     // Logic để điều chỉnh calo dựa trên factor
 
     const res = calo * factor;
 
     setEnergy(res.toFixed(2));
-    saveGoal(res);
+    saveGoal(res, weight);
     // toast.success(`Energy needed is: ${res} calories/day`);
   };
   const togglePopup = () => {
@@ -292,7 +300,7 @@ const Calculator = () => {
                     type="text"
                     id="weight"
                     value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    onChange={(e) => setWeight(Number(e.target.value))}
                     placeholder="Weight / kg"
                     className="px-3 py-3 border-black border-[2px] rounded-[4px]"
                   />
@@ -378,14 +386,14 @@ const Calculator = () => {
                     </h3>
                   )}
                 </div>
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   {bmr && (
                     <h3 className="text-[20px] font-poppins">
                       Your TDEE is:{' '}
                       <span className="font-bold text-red-500">{tdee}</span>
                     </h3>
                   )}
-                </div>
+                </div> */}
               </div>
               {displaySave && (
                 <div className="items-center justify-center grid">
@@ -407,7 +415,8 @@ const Calculator = () => {
                     <CaloriesPopUp
                       show={show}
                       handleClose={handleClose}
-                      data={tdee}
+                      data={Number(tdee)}
+                      weight={weight}
                       adjustCalories={adjustCalories}
                     />
                   </div>
@@ -521,7 +530,7 @@ const Calculator = () => {
                 <div>
                   <h3 className="text-[20px] font-poppins">
                   Your Water Intake is:{' '}
-                    <span className="font-bold text-red-500">{waterIntake}</span>
+                    <span className="font-bold text-red-500">{waterIntake} (l)</span>
                   </h3>
                   <h3 className="text-[18px] font-poppins">
                       Which means is:{' '}

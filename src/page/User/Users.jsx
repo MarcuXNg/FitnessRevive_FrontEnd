@@ -5,7 +5,7 @@ import CaloriesChart from '../../components/Chart/CaloriesChart';
 import useInstance from '../../setup/instance';
 import {formatDistanceToNow} from 'date-fns';
 import Calendar from 'react-calendar';
-import {toast} from 'react-toastify';
+// import {toast} from 'react-toastify';
 
 const User = () => {
   const {instance, controller} = useInstance();
@@ -15,6 +15,16 @@ const User = () => {
   const [burned, setBurned] = useState(0);
   const [meals, setMeals] = useState([]);
   const [exercise, setExercise] = useState([]);
+  const [carb, setCarb] = useState(0);
+  const [fat, setFat] = useState(0);
+  const [protein, setProtein] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [waterGoal, setWaterGoal] = useState(0);
+  const [water, setWater] = useState(0);
+  const carbGoal = (((0.55 * (Number(goal))) / 4).toFixed(0));
+  const proteinGoal = (((0.225 * (Number(goal))) / 4).toFixed(0));
+  const fatGoal = (((0.275 * (Number(goal))) / 9).toFixed(0));
+
 
   const [date, setDate] = useState(new Date());
   const formatDate = (date) => {
@@ -28,7 +38,9 @@ const User = () => {
     try {
       const res = await instance.get(`/users/goal/get`);
       if (res && res.data && res.data.EC === 0) {
-        setGoal(res.data.DT);
+        setGoal(res.data.DT.calories_goal);
+        setWeight(res.data.DT.weight);
+        setWaterGoal(res.data.DT.water_intake);
         // toast.success(res.data.EM);
       } else {
         // toast.error(res.data.EM);
@@ -46,6 +58,10 @@ const User = () => {
       if (res && res.data && res.data.EC === 0) {
         setEaten(res.data.DT.calories_consumed_per_day);
         setBurned(res.data.DT.calories_burnt_per_day);
+        setFat(res.data.DT.fat_consumed_per_day);
+        setCarb(res.data.DT.carbs_consumed_per_day);
+        setProtein(res.data.DT.protein_consumed_per_day);
+        setWater(res.data.DT.water_drink_per_day);
         // console.log(res.data.DT);
       } else {
         // toast.error(res.data.EM);
@@ -58,11 +74,49 @@ const User = () => {
     }
   };
 
+  // Calculate the number of glasses needed
+  const glassesNeeded = ((Number(waterGoal) * 1000) / 240).toFixed(0);
+
+  // Calculate the number of glasses the user has already drunk
+  const glassesDrunk = Number(water);
+
+  // Create an array of indices based on the glasses needed
+  const indices = Array.from({length: glassesNeeded}, (_, index) => index);
+
+  const saveWater = async () => {
+    try {
+      await instance.post(`/user/water/drink/${formatDate(date)}`);
+      await getDate(formatDate(date));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteWater = async () => {
+    try {
+      await instance.delete(`/user/water/delete/${formatDate(date)}`);
+      await getDate(formatDate(date));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClick = async (index) => {
+    if (index < (glassesDrunk / 240)) {
+      // The clicked span represents water that has been consumed
+      deleteWater();
+    } else {
+      // The clicked span represents water that is part of the goal
+      saveWater();
+    }
+  };
+
+
   const getMeals = async (date) => {
     try {
       const res = await instance.get(`/user/meals/date/${date}`);
       if (res && res.data && res.data.EC === 0) {
-        console.log(res.data.DT);
+        // console.log(res.data.DT);
         setMeals(res.data.DT);
         // toast.success(res.data.EM);
       } else {
@@ -136,22 +190,15 @@ const User = () => {
   }, []);
 
   useEffect(() => {
+    getGoal();
     getDate(formatDate(date));
     getMeals(formatDate(date));
     getExercises(formatDate(date));
   }, [date]);
 
   useEffect(() => {
-    getMeals(formatDate(date));
-  }, [date, eaten]);
-
-  useEffect(() => {
-    getExercises(formatDate(date));
-  }, [date, burned]);
-
-  useEffect(() => {
     calculatePercent();
-  }, [burned, goal, eaten]);
+  }, [date, goal, eaten]);
 
   return (
     <div className='flex items-center flex-col'>
@@ -164,19 +211,24 @@ const User = () => {
         value={date}
       />
       <div className='grid grid-cols-3 grid-rows-1 bg-white rounded-[18px] shadow-lg mt-10 py-8'>
+        <div></div>
+        <div>
+          <h1 className='flex items-center justify-center font-poppins font-semibold'>Calories</h1>
+        </div>
+        <div></div>
         <div className='flex items-center justify-center'>
           <div>
             <h1 className='flex items-center justify-center font-poppins font-semibold'>EATEN</h1>
-            <p className='flex items-center justify-center'>{eaten}</p>
+            <p className='flex items-center justify-center'>{Number(eaten)}</p>
           </div>
         </div>
         <div>
-          <CaloriesChart percent={percent} calories={(goal + burned - eaten).toFixed(0)}/>
+          <CaloriesChart percent={Number(percent)} calories={Number((goal + burned - eaten).toFixed(0))}/>
         </div>
         <div className='flex items-center justify-center'>
           <div>
             <h1 className='flex items-center justify-center font-poppins font-semibold'>BURNED</h1>
-            <p className='flex items-center justify-center'>{burned}</p>
+            <p className='flex items-center justify-center'>{Number(burned)}</p>
           </div>
         </div>
       </div>
@@ -185,20 +237,20 @@ const User = () => {
           <div className="flex mb-2 items-center justify-between">
             <div>
               <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
-                Carbs
+                Carb
               </span>
             </div>
             <div className="ml-20 text-right">
               <span className="text-xs font-semibold inline-block text-teal-600">
-                50
+                {carb} / {carbGoal}
               </span>
             </div>
           </div>
           <div className="flex mb-2 items-center justify-start">
             <div className="w-full overflow-hidden h-2 mb-4 text-xs flex rounded bg-teal-200">
               <div
-                // style={{width: `${percent}%`}}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
+                style={{width: `${(Number(carb) / carbGoal) * 100}%`}}
+                className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500`}
               ></div>
             </div>
           </div>
@@ -212,15 +264,15 @@ const User = () => {
             </div>
             <div className="ml-20 text-right">
               <span className="text-xs font-semibold inline-block text-teal-600">
-                50
+                {protein} / {proteinGoal}
               </span>
             </div>
           </div>
           <div className="flex mb-2 items-center justify-start">
             <div className="w-full overflow-hidden h-2 mb-4 text-xs flex rounded bg-teal-200">
               <div
-                // style={{width: `${percent}%`}}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
+                style={{width: `${(Number(protein) / proteinGoal) * 100}%`}}
+                className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500`}
               ></div>
             </div>
           </div>
@@ -229,23 +281,37 @@ const User = () => {
           <div className="flex mb-2 items-center justify-between">
             <div>
               <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
-                Fats
+                Fat
               </span>
             </div>
             <div className="ml-20 text-right">
               <span className="text-xs font-semibold inline-block text-teal-600">
-                50
+                {fat} / {fatGoal}
               </span>
             </div>
           </div>
           <div className="flex mb-2 items-center justify-start">
             <div className="w-full overflow-hidden h-2 mb-4 text-xs flex rounded bg-teal-200">
               <div
-                // style={{width: `${percent}%`}}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
+                style={{width: `${(Number(fat) / fatGoal) * 100}%`}}
+                className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500`}
               ></div>
             </div>
           </div>
+        </div>
+      </div>
+      <div>
+        <h1 className='flex justify-center mt-[60px] font-inter font-bold text-[35px]'>Water</h1>
+        <div>
+          <h1 className=' flex justify-center mt-[10px] mb-[15px] font-inter'>{glassesDrunk} / {Number(waterGoal) * 1000}</h1>
+        </div>
+        <div className="flex justify-center">
+          {indices.map((index) => (
+            // console.log(index)
+            <span key={index} className="material-symbols-outlined cursor-pointer" style={{fontSize: '80px'}} onClick={() => handleClick(index)}>
+              {index < (glassesDrunk / 240) ? 'water_full' : 'glass_cup'}
+            </span>
+          ))}
         </div>
       </div>
       <h1 className='mt-[60px] font-inter font-bold text-[35px]'>Log</h1>
@@ -253,14 +319,34 @@ const User = () => {
         <div className='flex justify-center'>
           <div>
             <h1 className='flex items-center justify-center font-poppins font-semibold mb-5'>Meals</h1>
-            {meals.map((meal, index) => (
-              <div key={index} className='bg-white rounded-[12px] w-[350px] shadow-lg'>
-                <div className="flex items-center">
-                  <h3 className='font-[500] text-[1rem]'>Users</h3>
-                  <h1 className='text-[1.8rem] font-[800]'>{meal.meal_name}</h1>
-                </div>
-              </div>
-            ))}
+            {meals && meals.length > 0 && (
+              <>
+                {Array.from(new Set(meals.map((item) => item.meal_type))).map((mealType, typeIndex) => (
+                  <div key={typeIndex} className="mb-5">
+                    <h2 className="text-xl font-semibold mb-2">{mealType.charAt(0).toUpperCase() + mealType.slice(1)}</h2>
+                    {meals
+                        .filter((item) => item.meal_type === mealType)
+                        .map((item, index) => (
+                          <div key={index} className="bg-white rounded-[12px] w-[350px] shadow-lg mb-3">
+                            <div className="p-[20px] grid grid-cols-2">
+                              <div>
+                                <h3 className="font-[800] text-[1.2rem]">{item.meal_name}</h3>
+                                {item.calories !== undefined && (
+                                  <p className="text-[1rem] font-[500]">{`${item.gam}g - ${item.calories}cal`}</p>
+                                )}
+                              </div>
+                              <div className="flex items-center justify-end">
+                                <span className="material-symbols-outlined mr-2">edit</span>
+                                <span className="material-symbols-outlined bg-slate-300 rounded-full">close_small</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                  </div>
+                ))}
+              </>
+            )}
+
           </div>
         </div>
         <div className='flex justify-center'>

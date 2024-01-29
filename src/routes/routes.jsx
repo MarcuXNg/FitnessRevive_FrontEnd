@@ -20,7 +20,6 @@ import ErrorPage from '../page/error/404.jsx'; // Error
 import RequireAuth from '../components/RequireAuth/RequireAuth.jsx'; // Parent Fragment with auth
 import UsersEdit from '../page/User/UsersEdit.jsx'; // User edit
 import PermissionsManage from '../page/Permission/PermissionsManage.jsx'; // PermissionsManage
-import Admin from '../page/Admin/Admin.jsx'; // Admin
 
 import UsersManage from '../page/Admin/UsersManage.jsx'; // UserManage
 import RolePermission from '../page/Role/RolePermission.jsx';
@@ -62,12 +61,11 @@ const AppRoutes = () => {
               <Route element={<RequireAuth />}>
                 {(auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2) && (
                   <Route path="admin" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<Admin />} />
                     <Route path="users" element={<UsersManage />} />
                     <Route path="permissions" element={<PermissionsManage />} />
                     <Route path="roles" element={<RolePermission />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
-                    <Route path="ticket" element={<Admin />} />
+                    <Route path="ticket" element={<PermissionsManage />} />
                   </Route>
                 )}
                 {auth.account.rolesWithPermission.id === 3 && (

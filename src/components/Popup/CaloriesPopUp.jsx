@@ -1,10 +1,21 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useState} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
 import {ExclamationTriangleIcon} from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
 
 
-const CaloriesPopUp = ({show, handleClose, data, adjustCalories}) => {
+const CaloriesPopUp = ({show, handleClose, data, adjustCalories, weight}) => {
+  const [type, setType] = useState('gain');
+  const [weightGoal, setWeightGoal] = useState(0);
+  const handleSaveGoal = async () => {
+    if (type === 'gain') {
+      adjustCalories(data, 1.1, weightGoal);
+    } else if (type === 'mantain') {
+      adjustCalories(data, 1, weight);
+    } else {
+      adjustCalories(data, 0.9, weightGoal);
+    }
+  };
   return (
     <div>
       <Transition.Root show={show} as={Fragment}>
@@ -51,11 +62,32 @@ const CaloriesPopUp = ({show, handleClose, data, adjustCalories}) => {
                     </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
+                    <select className='w-[200px] h-[50px] rounded-md border-[2px]' type='select' tabIndex="0" onChange={(e) => setType(e.target.value)} value={type}>
+                      <option value="gain">Gain Weight</option>
+                      <option value="mantain">Maintain Weight</option>
+                      <option value="lose">Lose Weight</option>
+                    </select>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
+                    {type === 'gain' && <input className='w-[70px] h-[50px] rounded-md border-[2px]' type='number' tabIndex="0" onChange={(e) => setWeightGoal(e.target.value)} value={weightGoal}></input>}
+                    {type === 'lose' && <input className='w-[70px] h-[50px] rounded-md border-[2px]' type='number' tabIndex="0" onChange={(e) => setWeightGoal(e.target.value)} value={weightGoal}></input>}
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
                     <button
                       type="button"
                       className="mr-2 inline-flex w-full justify-center rounded-lg bg-green-600 px-3 py-4 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                       onClick={() => {
-                        adjustCalories(data, 1.1);
+                        handleSaveGoal();
+                        handleClose();
+                      }}
+                    >
+                      Set Goal
+                    </button>
+                    {/* <button
+                      type="button"
+                      className="mr-2 inline-flex w-full justify-center rounded-lg bg-green-600 px-3 py-4 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                      onClick={() => {
+                        adjustCalories(data, 1.1, weightGoal);
                         handleClose();
                       }}
                     >
@@ -80,7 +112,7 @@ const CaloriesPopUp = ({show, handleClose, data, adjustCalories}) => {
                       }}
                     >
                       Lose Weight
-                    </button>
+                    </button> */}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -98,6 +130,7 @@ CaloriesPopUp.propTypes = {
   handleClose: PropTypes.func.isRequired,
   data: PropTypes.number.isRequired,
   adjustCalories: PropTypes.func.isRequired,
+  weight: PropTypes.number.isRequired,
 };
 
 export default CaloriesPopUp;

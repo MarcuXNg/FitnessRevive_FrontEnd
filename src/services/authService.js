@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import axios from '../setup/axios.js';
 import {useDispatch} from 'react-redux';
 import {updateToken} from '../hooks/authSlice.js';
@@ -10,7 +11,7 @@ const useRefreshToken = () => {
   const refresh = async () => {
     // If a refresh operation is already in progress, wait for it to complete
     while (isRefreshing) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Adjust the delay as needed
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Adjust the delay as needed
     }
 
     try {

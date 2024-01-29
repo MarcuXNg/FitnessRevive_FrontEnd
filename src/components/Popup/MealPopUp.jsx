@@ -1,18 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React, {useState, Fragment, useEffect} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
 import {ExclamationTriangleIcon} from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
-import useInstance from '../../setup/instance';
-import {toast} from 'react-toastify';
 
 
-const ExerciesPopup = ({show, handleClose, name, weight}) => {
-  const [duration, setDuration] = useState(60);
-  const [calcRes, setCalRes] = useState();
-  const [wei, setWei] = useState();
+const MealPopup = ({show, handleClose, saveMeal, name, calories, carb, fat, protein}) => {
   const date = new Date();
-
-  const {instance, controller} = useInstance();
+  const [gam, setGam] = useState(100);
+  const [calRes, setCalRes] = useState();
+  const [type, setType] = useState('breakfast');
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -21,57 +18,16 @@ const ExerciesPopup = ({show, handleClose, name, weight}) => {
     return `${year}-${month}-${day}`;
   };
 
-  const getUserData = async () => {
-    try {
-      const res = await instance.get('/user/body/get');
-      if (res && res.data && res.data.EC === 0) {
-        if (res && res.data && res.data.DT && res.data.DT.weight) {
-          setWei(res.data.DT.weight);
-        } else {
-          toast.error(res.data.EM);
-        }
-      } else {
-        toast.error(res.data.EM);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(res.data.EM);
-    } finally {
-      controller.abort();
-    }
-  };
-
-  const saveExercises = async (name, duration, calories, date) => {
-    try {
-      const res = await instance.post(`/user/calories/burned/${date}`, {name, duration, calories});
-      if (res && res.data && res.data.EC === 0) {
-        toast.success(res.data.EM);
-      } else {
-        toast.error(res.data.EM);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      controller.abort();
-    }
-  };
-
   useEffect(() => {
-    calculateCaloriesBurned();
-  }, [duration, wei]);
+    calculateCaloriesConsumed();
+  }, [gam, calories]);
 
-  const calculateCaloriesBurned = async () => {
-    if (weight) {
-      const MET = 3.0;
-      const result = (MET * weight * (duration / 60));
-      setCalRes(result.toFixed(2));
-    } else {
-      await getUserData();
-      const MET = 3.0;
-      const result = (MET * wei * (duration / 60));
+  const calculateCaloriesConsumed = async () => {
+    if (gam && calories) {
+      const perCal = calories / 100;
+      const result = (perCal * gam);
       setCalRes(result.toFixed(2));
     }
-    // console.log(result);
   };
 
   return (
@@ -87,7 +43,7 @@ const ExerciesPopup = ({show, handleClose, name, weight}) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -109,7 +65,7 @@ const ExerciesPopup = ({show, handleClose, name, weight}) => {
                       </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                          Add exercise
+                          Add Meal
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-lg text-red-500 font-poppins">
@@ -118,25 +74,33 @@ const ExerciesPopup = ({show, handleClose, name, weight}) => {
                         </div>
                         <div>
                           <p className="text-sm text-gray-500 font-poppins">
-                            {duration} min - {calcRes} cal
+                            {gam} g - {calRes} cal
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
-                    <input className='w-[70px] h-[50px] rounded-md border-[2px]' type='number' onChange={(e) => setDuration(e.target.value)} value={duration}></input>
+                    <input className='w-[70px] h-[50px] rounded-md border-[2px]' type='number' tabIndex="0" onChange={(e) => setGam(e.target.value)} value={gam}></input>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
+                    <select className='w-[150px] h-[50px] rounded-md border-[2px]' type='select' tabIndex="0" onChange={(e) => setType(e.target.value)} value={type}>
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row justify-center sm:px-6">
                     <button
                       type="button"
                       className="mr-2 inline-flex w-full justify-center rounded-[10px] bg-green-600 px-3 py-4 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                       onClick={() => {
-                        saveExercises(name, duration, calcRes, formatDate(date));
+                        saveMeal(name, calRes, carb, fat, protein, type, gam, formatDate(date));
                         handleClose();
                       }}
                     >
-                      Add exercise
+                      Add Meal
                     </button>
                   </div>
                 </Dialog.Panel>
@@ -150,12 +114,15 @@ const ExerciesPopup = ({show, handleClose, name, weight}) => {
 };
 
 
-ExerciesPopup.propTypes = {
+MealPopup.propTypes = {
   show: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  saveMeal: PropTypes.func.isRequired,
   name: PropTypes.string,
-  weight: PropTypes.number,
-//   adjustCalories: PropTypes.func.isRequired,
+  calories: PropTypes.number,
+  carb: PropTypes.number,
+  fat: PropTypes.number,
+  protein: PropTypes.number,
 };
 
-export default ExerciesPopup;
+export default MealPopup;

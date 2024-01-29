@@ -248,7 +248,7 @@ const NavHeader = (props) => {
                     to={
                         auth && auth.account && auth.account.rolesWithPermission ?
                           auth.account.rolesWithPermission.id === 1 || auth.account.rolesWithPermission.id === 2 ?
-                            '/admin/dashboard' :
+                            '/admin/users' :
                             auth.account.rolesWithPermission.id === 3 ?
                             '/user/dashboard' :
                             '/login' : // Set a default route if needed

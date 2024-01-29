@@ -55,24 +55,26 @@ const useInstance = () => {
           const prevRequest = error?.config;
 
           // If response status is 403 (forbidden) and the request hasn't been retried
-          if (error?.response?.status === 403 && !prevRequest?.sent) {
-            prevRequest.sent = true;
-            // Only proceed if a refresh request is not already in progress
-            try {
-              // Refresh the access token
-              const newAccessToken = await refresh();
+          if (error?.response?.status === 403) {
+            if (!prevRequest?.sent) {
+              // Mark the request as sent to avoid multiple refresh attempts
+              prevRequest.sent = true;
 
-              // Update the Authorization header with the new access token
-              prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-              // instance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+              try {
+                // Refresh the access token
+                const newAccessToken = await refresh();
 
-              // Retry the original request with the updated token
-              const retryResponse = await instance(prevRequest);
+                // Update the Authorization header with the new access token
+                prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-              return retryResponse;
-            } catch (error) {
-              // Handle refresh error, e.g., log or dispatch an action
-              console.error('Error refreshing token:', error);
+                // Retry the original request with the updated token
+                const retryResponse = await instance(prevRequest);
+
+                return Promise.resolve(retryResponse);
+              } catch (refreshError) {
+                // Handle refresh error, e.g., log or dispatch an action
+                console.error('Error refreshing token:', refreshError);
+              }
             }
           }
 

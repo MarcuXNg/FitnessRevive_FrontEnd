@@ -1,7 +1,7 @@
 import axios from 'axios';
 // import {toast} from 'react-toastify';
 
-const rapidAPIKey = 'b973f018femsh4c54185539aa444p1dc62ajsnb06b855ac06c' || process.env.REACT_APP_foodAPIKey;
+const rapidAPIKey = 'c82a86d20dmsh0724605318898c5p1d2168jsne4c6450b2fde' || process.env.REACT_APP_foodAPIKey;
 const controller = new AbortController();
 
 // Create an Axios instance with default configuration
