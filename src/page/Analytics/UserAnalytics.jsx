@@ -336,6 +336,7 @@ const UserAnalytics = () => {
     };
 
     weightData.forEach((day) => {
+      // console.log(day);
       const logDate = new Date(day.log_date);
       const month = new Intl.DateTimeFormat('en-US', {month: 'short'}).format(logDate);
       result[month] += day.weight_per_day;

@@ -27,7 +27,6 @@ const Detail = ({exerciseDetail}) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(res.data.EM);
     } finally {
       controller.abort();
     }
